@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+         #
+#    By: ggalon <ggalon@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/28 00:56:29 by ggalon            #+#    #+#              #
-#    Updated: 2024/01/28 00:56:29 by ggalon           ###   ########.fr        #
+#    Updated: 2024/04/02 18:20:15 by ggalon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,19 +16,27 @@ LIBFT_DIR	=	libft/
 
 SRCS_DIR	=	src/
 
-OBJS_DIR	=	obj/
+OBJS_DIR	=	.obj/
 
 INCL_DIR	=	inc/
 
+MLX_DIR		=	mlx/
+
 # FILES ========================================================================
 
-NAME	=	
+NAME	=	cube3d
+
+NAME_B	=	
 
 LIBFT	=	$(LIBFT_DIR)libft.a
 
-FILE_C	=	
+FILE_C	=	cub3d
+
+FILE_CB	=	
 
 FILE_H	=	
+
+FILE_HB	=	
 
 SRCS	=	$(addsuffix .c, $(addprefix $(SRCS_DIR), $(FILE_C)))
 
@@ -40,41 +48,49 @@ INCL	=	$(addsuffix .h, $(addprefix $(INCL_DIR), $(FILE_H)))
 
 CC			=	cc
 
-CC_FLAGS	=	-Wall -Wextra -Werror
+CC_FLAGS	=	-Wall -Wextra -Werror -I $(INCL_DIR) -I $(LIBFT_DIR)$(INCL_DIR)
 
-AR			=	ar
-
-AR_FLAGS	=	-rc
+MLX_FLAGS	=	-Lmlx -lmlx -L/usr/lib/X11 -lXext -lX11 -I/usr/include -Imlx
 
 NORM		=	norminette $(SRCS_DIR) $(INCL_DIR)
 
 # RULES ========================================================================
 
 all:
-	@ echo "\n${BIBlue}Checking Norminette...${NC}"
-	@ $(NORM) | grep -q Error && $(NORM) | grep Error || echo "\n${BIGreen}Norminette OK !${NC}"
+	@ echo "\n${BBlue}Checking Norminette...${NC}"
+	@ $(NORM) | grep -q Error && $(NORM) | grep Error || echo "\n${BGreen}Norminette OK !${NC}"
+	@ echo "\n${BBlue}Compilation of minilibX...${NC}"
+	@ $(MAKE) --no-print-directory -C $(MLX_DIR)
+	@ echo "\n${BGreen}minilibX Ready !${NC}"
 	@ $(MAKE) --no-print-directory -C $(LIBFT_DIR)
-	@ mkdir -p $(OBJS_DIR) $(OBJS_DIR)/lexer $(OBJS_DIR)/expander $(OBJS_DIR)/execution $(OBJS_DIR)/builtins
-	@ echo "\n${BIBlue}Compilation of project source files...${NC}"
+	@ echo "\n${BBlue}Compilation of project source files...${NC}"
+	@ mkdir -p $(OBJS_DIR)
 	@ $(MAKE) --no-print-directory $(NAME)
-	@ echo "\n${BIGreen}Project Ready !${NC}\n"
+	@ echo "\n${BGreen}Project Ready !${NC}\n"
 
-$(NAME): $(OBJS)
-	@ echo "\n${BICyan}Creating the executable...${NC}"
-	$(CC) $(CC_FLAGS) $(OBJS) $(LIBFT) -o $(NAME) -L/usr/local/lib -lreadline
+bonus:
+	@$(MAKE) --no-print-directory NAME="$(NAME_B)" FILE_C="$(FILE_CB)" FILE_H="$(FILE_HB)"
+
+$(NAME): $(OBJS) $(LIBFT)
+	@ echo "\n${BCyan}Creating the executable...${NC}"
+	$(CC) $(CC_FLAGS) $(MLX_FLAGS) $(OBJS) $(LIBFT) -o $(NAME)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c $(INCL) Makefile
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 clean:
+	@ echo "\n${BRed}minilibX deletion...${NC}"
+	@ $(MAKE) --no-print-directory -C $(MLX_DIR) clean
 	@ $(MAKE) --no-print-directory -C $(LIBFT_DIR) clean
-	@ echo "\n${BIRed}Project binary deletion...${NC}"
+	@ echo "\n${BRed}Project binary deletion...${NC}"
 	rm -rf $(OBJS_DIR)
 	@ echo
 
 fclean:
+	@ echo "\n${BRed}minilibX deletion...${NC}"
+	@ $(MAKE) --no-print-directory -C $(MLX_DIR) clean	
 	@ $(MAKE) --no-print-directory -C $(LIBFT_DIR) fclean
-	@ echo "\n${BIRed}Project deletion...${NC}"
+	@ echo "\n${BRed}Project deletion...${NC}"
 	rm -rf $(OBJS_DIR)
 	rm -f $(NAME) $(NAME_B)
 	@ echo
@@ -88,72 +104,32 @@ re: fclean all
 # Reset
 NC=\033[0m
 
-# Regular Colors
-Black=\033[0;30m
-Red=\033[0;31m
-Green=\033[0;32m
-Yellow=\033[0;33m
-Blue=\033[0;34m
-Purple=\033[0;35m
-Cyan=\033[0;36m
-White=\033[0;37m
+# Regular
+Black=\033[0;90m
+Red=\033[0;91m
+Green=\033[0;92m
+Yellow=\033[0;93m
+Blue=\033[0;94m
+Purple=\033[0;95m
+Cyan=\033[0;96m
+White=\033[0;97m
 
 # Bold
-BBlack=\033[1;30m
-BRed=\033[1;31m
-BGreen=\033[1;32m
-BYellow=\033[1;33m
-BBlue=\033[1;34m
-BPurple=\033[1;35m
-BCyan=\033[1;36m
-BWhite=\033[1;37m
-
-# Underline
-UBlack=\033[4;30m
-URed=\033[4;31m
-UGreen=\033[4;32m
-UYellow=\033[4;33m
-UBlue=\033[4;34m
-UPurple=\033[4;35m
-UCyan=\033[4;36m
-UWhite=\033[4;37m
+BBlack=\033[1;90m
+BRed=\033[1;91m
+BGreen=\033[1;92m
+BYellow=\033[1;93m
+BBlue=\033[1;94m
+BPurple=\033[1;95m
+BCyan=\033[1;96m
+BWhite=\033[1;97m
 
 # Background
-On_Black=\033[40m
-On_Red=\033[41m
-On_Green=\033[42m
-On_Yellow=\033[43m
-On_Blue=\033[44m
-On_Purple=\033[45m
-On_Cyan=\033[46m
-On_White=\033[47m
-
-# High Intensity
-IBlack=\033[0;90m
-IRed=\033[0;91m
-IGreen=\033[0;92m
-IYellow=\033[0;93m
-IBlue=\033[0;94m
-IPurple=\033[0;95m
-ICyan=\033[0;96m
-IWhite=\033[0;97m
-
-# Bold High Intensity
-BIBlack=\033[1;90m
-BIRed=\033[1;91m
-BIGreen=\033[1;92m
-BIYellow=\033[1;93m
-BIBlue=\033[1;94m
-BIPurple=\033[1;95m
-BICyan=\033[1;96m
-BIWhite=\033[1;97m
-
-# High Intensity backgrounds
-On_IBlack=\033[0;100m
-On_IRed=\033[0;101m
-On_IGreen=\033[0;102m
-On_IYellow=\033[0;103m
-On_IBlue=\033[0;104m
-On_IPurple=\033[0;105m
-On_ICyan=\033[0;106m
-On_IWhite=\033[0;107m
+BGBlack=\033[0;100m
+BGRed=\033[0;101m
+BGGreen=\033[0;102m
+BGYellow=\033[0;103m
+BGBlue=\033[0;104m
+BGPurple=\033[0;105m
+BGCyan=\033[0;106m
+BGWhite=\033[0;107m
