@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/02 18:02:50 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/03 15:25:45 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,15 @@ typedef struct s_data
 {
 	t_list	*map;
 }	t_data;
+
+typedef struct s_asset
+{
+	char	*no;
+	char	*so;
+	char	*ea;
+	char	*we;
+	size_t	fl;
+	size_t	ce;
+}	t_asset;
 
 #endif

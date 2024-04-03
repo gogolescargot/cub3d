@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ggalon <ggalon@student.42.fr>              +#+  +:+       +#+         #
+#    By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/28 00:56:29 by ggalon            #+#    #+#              #
-#    Updated: 2024/04/02 18:20:15 by ggalon           ###   ########.fr        #
+#    Updated: 2024/04/03 15:07:49 by ggalon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,7 +48,7 @@ INCL	=	$(addsuffix .h, $(addprefix $(INCL_DIR), $(FILE_H)))
 
 CC			=	cc
 
-CC_FLAGS	=	-Wall -Wextra -Werror -I $(INCL_DIR) -I $(LIBFT_DIR)$(INCL_DIR)
+CC_FLAGS	=	-Wall -Wextra -Werror -g3 -I $(INCL_DIR) -I $(LIBFT_DIR)$(INCL_DIR)
 
 MLX_FLAGS	=	-Lmlx -lmlx -L/usr/lib/X11 -lXext -lX11 -I/usr/include -Imlx
 
