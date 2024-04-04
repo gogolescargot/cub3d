@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/03 17:37:16 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/04 12:32:07 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ int	error(char *str)
 
 void	free_data(t_data *data, t_asset *asset)
 {
-	ft_lstclear(&data->map, ft_free);
+	ft_lstclear(&data->file, ft_free);
+	// ft_lstclear(&data->map, ft_free);
 	if (asset)
 	{
 		ft_free(asset->no);
@@ -63,7 +64,7 @@ int	file_read(int fd, t_data *data)
 			free_data(data, NULL);
 			return (1);
 		}
-		ft_lstadd_back(&data->map, node);
+		ft_lstadd_back(&data->file, node);
 	}
 	return (0);
 }
@@ -230,11 +231,11 @@ int	map_init(t_data *data, t_asset *asset)
 	t_list	*cur;
 	int		i;
 
-	cur = data->map;
+	cur = data->file;
 	i = 0;
 	while (cur)
 	{
-		if (!is_empty(cur->content) && i < 6)
+		if (i < 6 && !is_empty(cur->content))
 		{
 			if (map_asset(cur->content, asset, i))
 			{
@@ -243,9 +244,14 @@ int	map_init(t_data *data, t_asset *asset)
 			}
 			i++;
 		}
+		else if (!is_empty(cur->content))
+		{
+			data->map = cur;
+			return (0);
+		}
 		cur = cur->next;
 	}
-	return (0);
+	return (1);
 }
 
 bool	map_extension(const char *filename)
@@ -296,8 +302,18 @@ void	display_asset(t_asset *asset)
 	ft_printf("C: %d\n", asset->ce);
 }
 
+void	display_map(t_data *data)
+{
+	while (data->map)
+	{
+		ft_printf("%s\n", data->map->content);
+		data->map = data->map->next;
+	}
+}
+
 void	init_struct(t_data *data, t_asset *asset)
 {
+	data->file = NULL;
 	data->map = NULL;
 	asset->no = NULL;
 	asset->so = NULL;
@@ -318,6 +334,7 @@ int	main(int argc, const char *argv[])
 	if (map_init(&data, &asset))
 		return (1);
 	display_asset(&asset);
+	display_map(&data);
 	free_data(&data, &asset);
 	return (0);
 }
