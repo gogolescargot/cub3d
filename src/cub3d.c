@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/09 21:15:29 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/11 19:22:29 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ int	error(char *str)
 void	free_data(t_data *data, t_asset *asset)
 {
 	ft_lstclear(&data->file, ft_free);
-	// ft_lstclear(&data->map, ft_free);
 	if (asset)
 	{
 		ft_free(asset->no);
@@ -92,7 +91,7 @@ bool	is_empty(char *str)
 
 int	init_type(char ***type)
 {
-	*type = malloc(sizeof(char *) * 6);
+	*type = ft_calloc(6, sizeof(char *));
 	if (!*type)
 	{
 		error("Malloc error");
@@ -107,7 +106,7 @@ int	init_type(char ***type)
 	return (0);
 }
 
-int	format_asset_number(char *str, size_t *rgb)
+int	format_asset_color(char *str, size_t *rgb)
 {
 	char	**color;
 	int		r;
@@ -164,16 +163,16 @@ int	insert_asset_string(char *info, t_asset *asset, int i)
 	return (0);
 }
 
-int	insert_asset_number(char *info, t_asset *asset, int i)
+int	insert_asset_color(char *info, t_asset *asset, int i)
 {
 	if (i == 4)
 	{
-		if (format_asset_number(info, &asset->fl))
+		if (format_asset_color(info, &asset->fl))
 			return (1);
 	}
 	else
 	{
-		if (format_asset_number(info, &asset->ce))
+		if (format_asset_color(info, &asset->ce))
 			return (1);
 	}
 	return (0);
@@ -183,7 +182,7 @@ int	insert_asset(char *info, t_asset *asset, int i)
 {
 	if (i < 4 && insert_asset_string(info, asset, i))
 		return (1);
-	else if (i > 3 && insert_asset_number(info, asset, i))
+	else if (i > 3 && insert_asset_color(info, asset, i))
 		return (1);
 	return (0);
 }
@@ -251,6 +250,8 @@ int	map_init(t_data *data, t_asset *asset)
 		}
 		cur = cur->next;
 	}
+	error("Missing map");
+	free_data(data, asset);
 	return (1);
 }
 
@@ -311,6 +312,214 @@ void	display_map(t_data *data)
 	}
 }
 
+int	open_asset(t_data *data, t_asset *asset, char *filepath)
+{
+	int		fd;
+
+	fd = open(filepath, O_RDONLY);
+	if (fd == -1)
+	{
+		ft_putendl_fd("Error", 2);
+		perror(filepath);
+		free_data(data, asset);
+		return (1);
+	}
+	close(fd);
+	return (0);
+}
+
+int	check_asset(t_data *data, t_asset *asset)
+{
+	if (open_asset(data, asset, asset->no))
+		return (1);
+	if (open_asset(data, asset, asset->so))
+		return (1);
+	if (open_asset(data, asset, asset->we))
+		return (1);
+	if (open_asset(data, asset, asset->ea))
+		return (1);
+	return (0);
+}
+
+int	check_map_char(t_data *data, t_asset *asset)
+{
+	t_list	*cur;
+	size_t	i;
+
+	cur = data->map;
+	i = 0;
+	while (cur)
+	{
+		while (((char *)cur->content)[i])
+		{
+			if (!ft_strchr("01NSWE ", ((char *)cur->content)[i]))
+			{
+				error("Forbidden character");
+				free_data(data, asset);
+				return (1);
+			}
+			i++;
+		}
+		cur = cur->next;
+		i = 0;
+	}
+	return (0);
+}
+
+int	init_string_array(t_data *data, t_asset *asset, char ***str_map)
+{
+	t_list	*cur;
+	size_t	i;
+
+	cur = data->map;
+	i = 0;
+	*str_map = ft_calloc(ft_lstsize(data->map) + 1, sizeof(char *));
+	if (!*str_map)
+	{
+		error("Malloc error");
+		free_data(data, asset);
+		return (1);
+	}
+	while (cur)
+	{
+		(*str_map)[i] = ft_strdup(cur->content);
+		i++;
+		cur = cur->next;
+	}
+	return (0);
+}
+
+bool	is_border(t_data *data, size_t i, size_t j)
+{
+	if (i == 0 || i == data->height - 1)
+		return (true);
+	if (j == 0 || j == data->lengh - 1)
+		return (true);
+	return (false);
+}
+
+int	dfs(t_data *data, char **str_map, size_t i, size_t j)
+{
+	if ((is_border(data, i, j) || ft_strchr(" " ,str_map[i][j + 1])) && ft_strchr("0NSWE", str_map[i][j]))
+		return (1);
+	if (str_map[i][j] == '1')
+		return (0);
+	if (ft_strchr("0NSWE", str_map[i][j]))
+	{
+		str_map[i][j] = 'x';
+		if (dfs(data, str_map, i - 1, j)
+			|| dfs(data, str_map, i + 1, j)
+			|| dfs(data, str_map, i, j - 1)
+			|| dfs(data, str_map, i, j + 1))
+			return (1);
+	}
+	return (0);
+}
+
+bool	is_coord(t_data *data, char **str_map, size_t *i, size_t *j)
+{
+	*i = 0;
+	*j = 0;
+	while (str_map[*i])
+	{
+		while (str_map[*i][*j])
+		{
+			if (ft_strchr("0NSWE", str_map[*i][*j]))
+				return (true);
+			(*j)++;
+		}
+		if (*i == data->height && *j == data->lengh)
+			return (false);
+		(*j) = 0;
+		(*i)++;
+	}
+	return (false);
+}
+
+void	get_size(char **array, size_t *height, size_t *lengh)
+{
+	size_t	max_lengh;
+
+	*lengh = 0;
+	*height = 0;
+	max_lengh = 0;
+	while (array[*height])
+	{
+		while (array[*height][*lengh])
+		{
+			(*lengh)++;
+		}
+		if (*lengh > max_lengh)
+			max_lengh = *lengh;
+		*lengh = 0;
+		(*height)++;
+	}
+	*lengh = max_lengh;
+}
+
+int	check_map_border(t_data *data, t_asset *asset)
+{
+	char	**str_map;
+	size_t	i;
+	size_t	j;
+
+	if (init_string_array(data, asset, &str_map))
+		return (1);
+	get_size(str_map, &data->height, &data->lengh);
+	while (is_coord(data, str_map, &i, &j))
+	{
+		if (dfs(data, str_map, i, j))
+		{
+			error("Map not surrounded by walls");
+			free_data(data, asset);
+			ft_arrayclear(str_map);
+			return (1);
+		}
+	}
+	ft_arrayclear(str_map);
+	return (0);
+}
+
+int	check_map_entities(t_data *data, t_asset *asset)
+{
+	size_t	spawn;
+	size_t	i;
+	t_list	*cur;
+
+	spawn = 0;
+	i = 0;
+	cur = data->map;
+	while (spawn < 2 && cur)
+	{
+		while (spawn < 2 && ((char *)cur->content)[i])
+		{
+			if (ft_strchr("NSWE", ((char *)cur->content)[i]))
+				spawn++;
+			i++;
+		}
+		i = 0;
+		cur = cur->next;
+	}
+	if (spawn != 1)
+	{
+		error("Wrong spawn location number");
+		free_data(data, asset);
+		return (1);
+	}
+	return (0);
+}
+
+int	check_map(t_data *data, t_asset *asset)
+{
+	if (check_map_char(data, asset))
+		return (1);
+	if (check_map_entities(data, asset))
+		return (1);
+	if (check_map_border(data, asset))
+		return (1);
+	return (0);
+}
+
 void	init_struct(t_data *data, t_asset *asset, t_mlx	*mlx)
 {
 	data->file = NULL;
@@ -332,6 +541,29 @@ int	destroy(t_data *data)
 	exit(0);
 }
 
+int	window_init(t_data *data, t_asset *asset, t_mlx *mlx)
+{
+	mlx->ptr = mlx_init();
+	if (!mlx->ptr)
+	{
+		error("minilibX initialization failed");
+		free_data(data, asset);
+		return (1);
+	}
+	mlx->win = mlx_new_window(mlx->ptr, 200, 100, "ggalon - cub3d");
+	if (!mlx->win)
+	{
+		error("minilibX window failed");
+		free_data(data, asset);
+		ft_free(mlx->ptr);
+		return (1);
+	}
+	// mlx_hook(mlx.win, KeyPress, KeyPressMask, &keypress, &data);
+	mlx_hook(mlx->win, DestroyNotify, StructureNotifyMask, &destroy, &data);
+	mlx_loop(mlx->ptr);
+	return (0);
+}
+
 int	main(int argc, const char *argv[])
 {
 	t_data	data;
@@ -345,22 +577,13 @@ int	main(int argc, const char *argv[])
 		return (1);
 	if (map_init(&data, &asset))
 		return (1);
+	if (check_map(&data, &asset))
+		return (1);
+	if (window_init(&data, &asset, &mlx))
+		return (1);
 	display_asset(&asset);
 	display_map(&data);
-	mlx.ptr = mlx_init();
-	mlx.win = mlx_new_window(mlx.ptr, 200, 100, "ggalon - cub3d");
-	// mlx_hook(mlx.win, KeyPress, KeyPressMask, &keypress, &data);
-	mlx_hook(mlx.win, DestroyNotify, StructureNotifyMask, &destroy, &data);
-	mlx_loop(mlx.ptr);
-
 	free_data(&data, &asset);
 	return (0);
 }
 
-/*
-	while (data->map)
-	{
-	ft_printf("%s", data->map->content);
-	data->map = data->map->next;
-	}
-*/
