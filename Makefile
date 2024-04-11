@@ -6,7 +6,7 @@
 #    By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/28 00:56:29 by ggalon            #+#    #+#              #
-#    Updated: 2024/04/03 15:07:49 by ggalon           ###   ########.fr        #
+#    Updated: 2024/04/09 20:23:33 by ggalon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,8 @@ NAME_B	=
 
 LIBFT	=	$(LIBFT_DIR)libft.a
 
+MLX		=	$(MLX_DIR)libmlx_Linux.a
+
 FILE_C	=	cub3d
 
 FILE_CB	=	
@@ -48,9 +50,9 @@ INCL	=	$(addsuffix .h, $(addprefix $(INCL_DIR), $(FILE_H)))
 
 CC			=	cc
 
-CC_FLAGS	=	-Wall -Wextra -Werror -g3 -I $(INCL_DIR) -I $(LIBFT_DIR)$(INCL_DIR)
+CC_FLAGS	=	-Wall -Wextra -Werror -g3 -I $(INCL_DIR) -I $(LIBFT_DIR)$(INCL_DIR) -I $(MLX_DIR)
 
-MLX_FLAGS	=	-Lmlx -lmlx -L/usr/lib/X11 -lXext -lX11 -I/usr/include -Imlx
+MLX_FLAGS	=	-lXext -lX11
 
 NORM		=	norminette $(SRCS_DIR) $(INCL_DIR)
 
@@ -71,9 +73,9 @@ all:
 bonus:
 	@$(MAKE) --no-print-directory NAME="$(NAME_B)" FILE_C="$(FILE_CB)" FILE_H="$(FILE_HB)"
 
-$(NAME): $(OBJS) $(LIBFT)
+$(NAME): $(OBJS) $(LIBFT) $(MLX)
 	@ echo "\n${BCyan}Creating the executable...${NC}"
-	$(CC) $(CC_FLAGS) $(MLX_FLAGS) $(OBJS) $(LIBFT) -o $(NAME)
+	$(CC) $(CC_FLAGS) $(OBJS) $(LIBFT) $(MLX) $(MLX_FLAGS) -o $(NAME)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c $(INCL) Makefile
 	$(CC) $(CC_FLAGS) -c $< -o $@

@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/04 12:32:07 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/09 21:15:29 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,22 +311,34 @@ void	display_map(t_data *data)
 	}
 }
 
-void	init_struct(t_data *data, t_asset *asset)
+void	init_struct(t_data *data, t_asset *asset, t_mlx	*mlx)
 {
 	data->file = NULL;
 	data->map = NULL;
+	data->asset = asset;
+	data->mlx = mlx;
 	asset->no = NULL;
 	asset->so = NULL;
 	asset->we = NULL;
 	asset->ea = NULL;
 }
 
+int	destroy(t_data *data)
+{
+	mlx_destroy_window(data->mlx->ptr, data->mlx->win);
+	mlx_destroy_display(data->mlx->ptr);
+	ft_free(data->mlx->ptr);
+	free_data(data, data->asset);
+	exit(0);
+}
+
 int	main(int argc, const char *argv[])
 {
 	t_data	data;
 	t_asset	asset;
+	t_mlx	mlx;
 
-	init_struct(&data, &asset);
+	init_struct(&data, &asset, &mlx);
 	if (args_check(argc, argv))
 		return (1);
 	if (file_init(argv[1], &data))
@@ -335,6 +347,12 @@ int	main(int argc, const char *argv[])
 		return (1);
 	display_asset(&asset);
 	display_map(&data);
+	mlx.ptr = mlx_init();
+	mlx.win = mlx_new_window(mlx.ptr, 200, 100, "ggalon - cub3d");
+	// mlx_hook(mlx.win, KeyPress, KeyPressMask, &keypress, &data);
+	mlx_hook(mlx.win, DestroyNotify, StructureNotifyMask, &destroy, &data);
+	mlx_loop(mlx.ptr);
+
 	free_data(&data, &asset);
 	return (0);
 }
