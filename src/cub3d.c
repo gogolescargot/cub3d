@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/11 19:22:29 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/12 17:20:27 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,31 +19,32 @@ int	error(char *str)
 	return (1);
 }
 
-void	free_data(t_data *data, t_asset *asset)
+void	free_data(t_data *data)
 {
 	ft_lstclear(&data->file, ft_free);
-	if (asset)
+	ft_arrayclear(data->map);
+	if (data->asset)
 	{
-		ft_free(asset->no);
-		ft_free(asset->so);
-		ft_free(asset->we);
-		ft_free(asset->ea);
+		ft_free(data->asset->no);
+		ft_free(data->asset->so);
+		ft_free(data->asset->we);
+		ft_free(data->asset->ea);
 	}
 }
 
-int	file_open(const char *file, int *fd, t_data *data)
+int	file_open(t_data *data, const char *file, int *fd)
 {
 	*fd = open(file, O_RDONLY);
 	if (*fd == -1)
 	{
 		error("Cannot open file");
-		free_data(data, NULL);
+		free_data(data);
 		return (1);
 	}
 	return (0);
 }
 
-int	file_read(int fd, t_data *data)
+int	file_read(t_data *data, int fd)
 {
 	t_list	*node;
 	char	*line;
@@ -60,7 +61,7 @@ int	file_read(int fd, t_data *data)
 		{
 			error("Malloc error");
 			free(line);
-			free_data(data, NULL);
+			free_data(data);
 			return (1);
 		}
 		ft_lstadd_back(&data->file, node);
@@ -68,13 +69,13 @@ int	file_read(int fd, t_data *data)
 	return (0);
 }
 
-int	file_init(const char *file, t_data *data)
+int	file_init(t_data *data, const char *file)
 {
 	int		fd;
 
-	if (file_open(file, &fd, data))
+	if (file_open(data, file, &fd))
 		return (1);
-	if (file_read(fd, data))
+	if (file_read(data, fd))
 		return (1);
 	close(fd);
 	return (0);
@@ -139,7 +140,7 @@ int	format_asset_color(char *str, size_t *rgb)
 	return (0);
 }
 
-int	insert_asset_string(char *info, t_asset *asset, int i)
+int	insert_asset_string(t_asset *asset, char *info, int i)
 {
 	char	*str;
 
@@ -163,7 +164,7 @@ int	insert_asset_string(char *info, t_asset *asset, int i)
 	return (0);
 }
 
-int	insert_asset_color(char *info, t_asset *asset, int i)
+int	insert_asset_color(t_asset *asset, char *info, int i)
 {
 	if (i == 4)
 	{
@@ -178,16 +179,16 @@ int	insert_asset_color(char *info, t_asset *asset, int i)
 	return (0);
 }
 
-int	insert_asset(char *info, t_asset *asset, int i)
+int	insert_asset(t_asset *asset, char *info, int i)
 {
-	if (i < 4 && insert_asset_string(info, asset, i))
+	if (i < 4 && insert_asset_string(asset, info, i))
 		return (1);
-	else if (i > 3 && insert_asset_color(info, asset, i))
+	else if (i > 3 && insert_asset_color(asset, info, i))
 		return (1);
 	return (0);
 }
 
-int	map_asset(const char *str, t_asset *asset, int i)
+int	map_asset(t_asset *asset, const char *str, int i)
 {
 	char	**type;
 	char	**info;
@@ -214,7 +215,7 @@ int	map_asset(const char *str, t_asset *asset, int i)
 		ft_free(type);
 		return (1);
 	}
-	if (insert_asset(info[1], asset, i))
+	if (insert_asset(asset, info[1], i))
 	{
 		ft_arrayclear(info);
 		ft_free(type);
@@ -222,6 +223,67 @@ int	map_asset(const char *str, t_asset *asset, int i)
 	}
 	ft_arrayclear(info);
 	ft_free(type);
+	return (0);
+}
+
+size_t	get_max_strlen(t_list *lst)
+{
+	t_list	*cur;
+	size_t	max;
+	size_t	len;
+
+	max = 0;
+	cur = lst;
+	while (cur)
+	{
+		len = ft_strlen(cur->content);
+		if (len > max)
+			max = len;
+		cur = cur->next;
+	}
+	return (max);
+}
+
+int	insert_string_array(t_data *data, char *str, size_t max_len, char **dst)
+{
+	size_t	len;
+
+	len = ft_strlen(str);
+	*dst = ft_calloc(max_len + 1, sizeof(char));
+	if (!*dst)
+	{
+		error("Malloc error");
+		free_data(data);
+		return (1);
+	}
+	ft_strlcat(*dst, str, max_len + 1);
+	ft_memset(*dst + len, ' ', max_len - len);
+	return (0);
+}
+
+int	init_string_array(t_data *data, t_list *map)
+{
+	size_t	i;
+	char	*tmp;
+
+	i = 0;
+	data->lengh = get_max_strlen(map);
+	data->height = ft_lstsize(map);
+	data->map = ft_calloc(data->height + 1, sizeof(char *));
+	if (!data->map)
+	{
+		error("Malloc error");
+		free_data(data);
+		return (1);
+	}
+	while (map)
+	{
+		if (insert_string_array(data, map->content, data->lengh, &tmp))
+			return (1);
+		data->map[i] = tmp;
+		i++;
+		map = map->next;
+	}
 	return (0);
 }
 
@@ -236,22 +298,22 @@ int	map_init(t_data *data, t_asset *asset)
 	{
 		if (i < 6 && !is_empty(cur->content))
 		{
-			if (map_asset(cur->content, asset, i))
+			if (map_asset(asset, cur->content, i))
 			{
-				free_data(data, asset);
+				free_data(data);
 				return (1);
 			}
 			i++;
 		}
 		else if (!is_empty(cur->content))
 		{
-			data->map = cur;
+			init_string_array(data, cur);
 			return (0);
 		}
 		cur = cur->next;
 	}
 	error("Missing map");
-	free_data(data, asset);
+	free_data(data);
 	return (1);
 }
 
@@ -303,16 +365,19 @@ void	display_asset(t_asset *asset)
 	ft_printf("C: %d\n", asset->ce);
 }
 
-void	display_map(t_data *data)
+void	display_map(char **map)
 {
-	while (data->map)
+	size_t	i;
+
+	i = 0;
+	while (map[i])
 	{
-		ft_printf("%s\n", data->map->content);
-		data->map = data->map->next;
+		ft_printf("%s|\n", map[i]);
+		i++;
 	}
 }
 
-int	open_asset(t_data *data, t_asset *asset, char *filepath)
+int	open_asset(t_data *data, char *filepath)
 {
 	int		fd;
 
@@ -321,7 +386,7 @@ int	open_asset(t_data *data, t_asset *asset, char *filepath)
 	{
 		ft_putendl_fd("Error", 2);
 		perror(filepath);
-		free_data(data, asset);
+		free_data(data);
 		return (1);
 	}
 	close(fd);
@@ -330,61 +395,38 @@ int	open_asset(t_data *data, t_asset *asset, char *filepath)
 
 int	check_asset(t_data *data, t_asset *asset)
 {
-	if (open_asset(data, asset, asset->no))
+	if (open_asset(data, asset->no))
 		return (1);
-	if (open_asset(data, asset, asset->so))
+	if (open_asset(data, asset->so))
 		return (1);
-	if (open_asset(data, asset, asset->we))
+	if (open_asset(data, asset->we))
 		return (1);
-	if (open_asset(data, asset, asset->ea))
+	if (open_asset(data, asset->ea))
 		return (1);
 	return (0);
 }
 
-int	check_map_char(t_data *data, t_asset *asset)
+int	check_map_char(t_data *data)
 {
-	t_list	*cur;
 	size_t	i;
+	size_t	j;
 
-	cur = data->map;
 	i = 0;
-	while (cur)
+	j = 0;
+	while (data->map[i])
 	{
-		while (((char *)cur->content)[i])
+		while (data->map[i][j])
 		{
-			if (!ft_strchr("01NSWE ", ((char *)cur->content)[i]))
+			if (!ft_strchr("01NSWE ", data->map[i][j]))
 			{
 				error("Forbidden character");
-				free_data(data, asset);
+				free_data(data);
 				return (1);
 			}
-			i++;
+			j++;
 		}
-		cur = cur->next;
-		i = 0;
-	}
-	return (0);
-}
-
-int	init_string_array(t_data *data, t_asset *asset, char ***str_map)
-{
-	t_list	*cur;
-	size_t	i;
-
-	cur = data->map;
-	i = 0;
-	*str_map = ft_calloc(ft_lstsize(data->map) + 1, sizeof(char *));
-	if (!*str_map)
-	{
-		error("Malloc error");
-		free_data(data, asset);
-		return (1);
-	}
-	while (cur)
-	{
-		(*str_map)[i] = ft_strdup(cur->content);
+		j = 0;
 		i++;
-		cur = cur->next;
 	}
 	return (0);
 }
@@ -400,7 +442,9 @@ bool	is_border(t_data *data, size_t i, size_t j)
 
 int	dfs(t_data *data, char **str_map, size_t i, size_t j)
 {
-	if ((is_border(data, i, j) || ft_strchr(" " ,str_map[i][j + 1])) && ft_strchr("0NSWE", str_map[i][j]))
+	if (is_border(data, i, j) && !ft_strchr("1", str_map[i][j]))
+		return (1);
+	if (ft_strchr(" ", str_map[i][j]))
 		return (1);
 	if (str_map[i][j] == '1')
 		return (0);
@@ -436,96 +480,97 @@ bool	is_coord(t_data *data, char **str_map, size_t *i, size_t *j)
 	return (false);
 }
 
-void	get_size(char **array, size_t *height, size_t *lengh)
+int	dup_array(t_data *data, char **src, char ***dst)
 {
-	size_t	max_lengh;
-
-	*lengh = 0;
-	*height = 0;
-	max_lengh = 0;
-	while (array[*height])
-	{
-		while (array[*height][*lengh])
-		{
-			(*lengh)++;
-		}
-		if (*lengh > max_lengh)
-			max_lengh = *lengh;
-		*lengh = 0;
-		(*height)++;
-	}
-	*lengh = max_lengh;
-}
-
-int	check_map_border(t_data *data, t_asset *asset)
-{
-	char	**str_map;
 	size_t	i;
-	size_t	j;
+	char	*tmp;
 
-	if (init_string_array(data, asset, &str_map))
-		return (1);
-	get_size(str_map, &data->height, &data->lengh);
-	while (is_coord(data, str_map, &i, &j))
+	i = 0;
+	*dst = ft_calloc(data->height + 1, sizeof(char *));
+	while (src[i])
 	{
-		if (dfs(data, str_map, i, j))
+		tmp = ft_strdup(src[i]);
+		if (!tmp)
 		{
-			error("Map not surrounded by walls");
-			free_data(data, asset);
-			ft_arrayclear(str_map);
+			error("Malloc error");
+			free_data(data);
 			return (1);
 		}
+		(*dst)[i] = tmp;
+		i++;
 	}
-	ft_arrayclear(str_map);
 	return (0);
 }
 
-int	check_map_entities(t_data *data, t_asset *asset)
+int	check_map_border(t_data *data)
+{
+	size_t	i;
+	size_t	j;
+	char	**dfs_str;
+
+	if (dup_array(data, data->map, &dfs_str))
+		return (1);
+	while (is_coord(data, dfs_str, &i, &j))
+	{
+		if (dfs(data, dfs_str, i, j))
+		{
+			error("Map not surrounded by walls");
+			free_data(data);
+			ft_arrayclear(dfs_str);
+			return (1);
+		}
+	}
+	ft_arrayclear(dfs_str);
+	return (0);
+}
+
+int	check_map_entities(t_data *data)
 {
 	size_t	spawn;
 	size_t	i;
-	t_list	*cur;
+	size_t	j;
 
 	spawn = 0;
 	i = 0;
-	cur = data->map;
-	while (spawn < 2 && cur)
+	j = 0;
+	while (spawn < 2 && data->map[i])
 	{
-		while (spawn < 2 && ((char *)cur->content)[i])
+		while (spawn < 2 && data->map[i][j])
 		{
-			if (ft_strchr("NSWE", ((char *)cur->content)[i]))
+			if (ft_strchr("NSWE", data->map[i][j]))
 				spawn++;
-			i++;
+			j++;
 		}
-		i = 0;
-		cur = cur->next;
+		j = 0;
+		i++;
 	}
 	if (spawn != 1)
 	{
 		error("Wrong spawn location number");
-		free_data(data, asset);
+		free_data(data);
 		return (1);
 	}
 	return (0);
 }
 
-int	check_map(t_data *data, t_asset *asset)
+int	map_check(t_data *data)
 {
-	if (check_map_char(data, asset))
+	if (check_map_char(data))
 		return (1);
-	if (check_map_entities(data, asset))
+	if (check_map_entities(data))
 		return (1);
-	if (check_map_border(data, asset))
+	if (check_map_border(data))
 		return (1);
 	return (0);
 }
 
-void	init_struct(t_data *data, t_asset *asset, t_mlx	*mlx)
+void	struct_init(t_data *data, t_asset *asset, t_mlx	*mlx, t_cam *cam)
 {
 	data->file = NULL;
 	data->map = NULL;
 	data->asset = asset;
 	data->mlx = mlx;
+	data->cam = cam;
 	asset->no = NULL;
 	asset->so = NULL;
 	asset->we = NULL;
@@ -537,53 +582,101 @@ int	destroy(t_data *data)
 	mlx_destroy_window(data->mlx->ptr, data->mlx->win);
 	mlx_destroy_display(data->mlx->ptr);
 	ft_free(data->mlx->ptr);
-	free_data(data, data->asset);
+	free_data(data);
 	exit(0);
 }
 
-int	window_init(t_data *data, t_asset *asset, t_mlx *mlx)
+int	keypress(int keycode, t_data *data)
+{
+	if (keycode == ESC)
+		destroy(data);
+	return (0);
+}
+
+int	window_init(t_data *data, t_mlx *mlx)
 {
 	mlx->ptr = mlx_init();
 	if (!mlx->ptr)
 	{
 		error("minilibX initialization failed");
-		free_data(data, asset);
+		free_data(data);
 		return (1);
 	}
-	mlx->win = mlx_new_window(mlx->ptr, 200, 100, "ggalon - cub3d");
+	mlx->win = mlx_new_window(mlx->ptr, WIDTH, HEIGHT, "ggalon - cub3d");
 	if (!mlx->win)
 	{
 		error("minilibX window failed");
-		free_data(data, asset);
+		free_data(data);
 		ft_free(mlx->ptr);
 		return (1);
 	}
-	// mlx_hook(mlx.win, KeyPress, KeyPressMask, &keypress, &data);
-	mlx_hook(mlx->win, DestroyNotify, StructureNotifyMask, &destroy, &data);
+	mlx_hook(mlx->win, KeyPress, KeyPressMask, &keypress, data);
+	mlx_hook(mlx->win, DestroyNotify, StructureNotifyMask, &destroy, data);
 	mlx_loop(mlx->ptr);
 	return (0);
 }
+
+// int	draw(t_data *data, t_asset *asset, t_cam *cam)
+// {
+// 	size_t	x;
+
+// 	while (true)
+// 	{
+// 		x = 0;
+// 		while (x < WIDTH)
+// 		{
+// 			cam->cameraX = 2 * x / WIDTH - 1;
+// 			cam->rayDirX = cam->dirX + cam->planeX * cam->cameraX;
+// 			cam->rayDirY = cam->dirY + cam->planeY * cam->cameraX;
+// 		}
+// 	}
+// 	return (0);
+// }
+
+// int	get_coord(t_data *data)
+// {
+// 	data->map
+// }
+
+// int	camera_init(t_data *data, t_asset *asset, t_cam *cam)
+// {
+// 	double	posX;
+// 	double	posY; //x and y start position
+// 	double	dirX;
+// 	double	dirY; //initial direction vector
+// 	double	planeX;
+// 	double	planeY; //the 2d raycaster version of camera plane
+// 	double	time; //time of current frame
+// 	double	oldTime; //time of previous frame
+// 	double	cameraX; //x-coordinate in camera space
+// 	double	rayDirX;
+// 	double	rayDirY;
+// }
 
 int	main(int argc, const char *argv[])
 {
 	t_data	data;
 	t_asset	asset;
 	t_mlx	mlx;
+	t_cam	cam;
 
-	init_struct(&data, &asset, &mlx);
+	struct_init(&data, &asset, &mlx, &cam);
 	if (args_check(argc, argv))
 		return (1);
-	if (file_init(argv[1], &data))
+	if (file_init(&data, argv[1]))
 		return (1);
 	if (map_init(&data, &asset))
 		return (1);
-	if (check_map(&data, &asset))
-		return (1);
-	if (window_init(&data, &asset, &mlx))
+	if (map_check(&data))
 		return (1);
 	display_asset(&asset);
-	display_map(&data);
-	free_data(&data, &asset);
+	display_map(data.map);
+	if (window_init(&data, &mlx))
+		return (1);
+	// if (camera_init(&data, &asset, &cam))
+	// 	return (1);
+	// if (draw(&data, &asset, &cam))
+	// 	return (1);
+	free_data(&data);
 	return (0);
 }
-

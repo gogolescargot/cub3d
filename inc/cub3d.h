@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/11 19:27:40 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/12 17:22:14 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,26 @@
 # include <stdio.h>
 # include <fcntl.h>
 # include <stdbool.h>
+
+# define ESC 65307
+
+# define WIDTH 800
+# define HEIGHT 600
+
+typedef	struct s_cam
+{
+	double	posX;
+	double	posY; //x and y start position
+	double	dirX;
+	double	dirY; //initial direction vector
+	double	planeX;
+	double	planeY; //the 2d raycaster version of camera plane
+	double	time; //time of current frame
+	double	oldTime; //time of previous frame
+	double	cameraX; //x-coordinate in camera space
+	double	rayDirX;
+	double	rayDirY;
+}	t_cam;
 
 typedef struct s_mlx
 {
@@ -40,11 +60,12 @@ typedef struct s_asset
 typedef struct s_data
 {
 	t_list	*file;
-	t_list	*map;
+	char	**map;
 	size_t	height;
 	size_t	lengh;
 	t_asset	*asset;
 	t_mlx	*mlx;
+	t_cam	*cam;
 }	t_data;
 
 #endif
