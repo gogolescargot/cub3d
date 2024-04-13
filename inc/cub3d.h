@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/12 17:22:14 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/14 01:22:01 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,58 @@
 # include <stdio.h>
 # include <fcntl.h>
 # include <stdbool.h>
+# include <math.h>
 
 # define ESC 65307
+# define W 119
+# define A 97
+# define S 115
+# define D 100
+# define L_ARR 65361
+# define R_ARR 65363
 
 # define WIDTH 800
 # define HEIGHT 600
 
+# define PI 3.14159265359
+
+# define ROTATE_SPEED (360 / 20) * PI / 180
+# define MOVE_SPEED 0.1
+
+# define ABS(Value) Value * ((Value > 0) - (Value < 0))
+
+typedef struct s_vector
+{
+	double	x;
+	double	y;
+}	t_vector;
+
+typedef struct s_point
+{
+	double	x;
+	double	y;
+}	t_point;
+
 typedef	struct s_cam
 {
-	double	posX;
-	double	posY; //x and y start position
-	double	dirX;
-	double	dirY; //initial direction vector
-	double	planeX;
-	double	planeY; //the 2d raycaster version of camera plane
+	t_point		pos;
+	t_vector	dir;
+	t_vector	plane;
+	t_vector	ray;
 	double	time; //time of current frame
-	double	oldTime; //time of previous frame
-	double	cameraX; //x-coordinate in camera space
-	double	rayDirX;
-	double	rayDirY;
+	double	old_time; //time of previous frame
+	double	camera_x; //x-coordinate in camera space
+	
 }	t_cam;
+
+typedef struct s_img
+{
+    void	*ptr;
+    char	*addr;
+    int		bpp;
+    int		size_line;
+    int		endian;
+}	t_img;
 
 typedef struct s_mlx
 {

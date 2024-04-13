@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/12 17:20:27 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/14 01:22:12 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -480,16 +480,16 @@ bool	is_coord(t_data *data, char **str_map, size_t *i, size_t *j)
 	return (false);
 }
 
-int	dup_array(t_data *data, char **src, char ***dst)
+int	dup_map(t_data *data, char ***dst)
 {
 	size_t	i;
 	char	*tmp;
 
 	i = 0;
 	*dst = ft_calloc(data->height + 1, sizeof(char *));
-	while (src[i])
+	while (data->map[i])
 	{
-		tmp = ft_strdup(src[i]);
+		tmp = ft_strdup(data->map[i]);
 		if (!tmp)
 		{
 			error("Malloc error");
@@ -506,21 +506,21 @@ int	check_map_border(t_data *data)
 {
 	size_t	i;
 	size_t	j;
-	char	**dfs_str;
+	char	**map_dfs;
 
-	if (dup_array(data, data->map, &dfs_str))
+	if (dup_map(data, &map_dfs))
 		return (1);
-	while (is_coord(data, dfs_str, &i, &j))
+	while (is_coord(data, map_dfs, &i, &j))
 	{
-		if (dfs(data, dfs_str, i, j))
+		if (dfs(data, map_dfs, i, j))
 		{
 			error("Map not surrounded by walls");
 			free_data(data);
-			ft_arrayclear(dfs_str);
+			ft_arrayclear(map_dfs);
 			return (1);
 		}
 	}
-	ft_arrayclear(dfs_str);
+	ft_arrayclear(map_dfs);
 	return (0);
 }
 
@@ -586,10 +586,72 @@ int	destroy(t_data *data)
 	exit(0);
 }
 
+
+bool	is_outside(t_data *data, t_point *point)
+{
+	if ((size_t)point->x <= 0 || (size_t)point->x >= data->lengh - 1)
+		return (true);
+	if ((size_t)point->y <= 0 || (size_t)point->y >= data->height - 1)
+		return (true);
+	return (false);
+}
+
+void	move(t_data *data, t_cam *cam, int keycode)
+{
+	t_vector	move_dir;
+	t_point		tmp;
+
+	move_dir.x = cam->dir.x * MOVE_SPEED;
+	move_dir.y = cam->dir.y * MOVE_SPEED;
+	if (keycode == W)
+	{
+		tmp.x = cam->pos.x + move_dir.x;
+		tmp.y = cam->pos.y + move_dir.y;
+	}
+	else if (keycode == A)
+	{
+		tmp.x = cam->pos.x + move_dir.y;
+		tmp.y = cam->pos.y - move_dir.x;
+	}
+	else if (keycode == S)
+	{
+		tmp.x = cam->pos.x - move_dir.x;
+		tmp.y = cam->pos.y - move_dir.y;
+	}
+	else if (keycode == D)
+	{
+		tmp.x = cam->pos.x - move_dir.y;
+		tmp.y = cam->pos.y + move_dir.x;
+	}
+	if (!is_outside(data, &tmp))
+	{
+		cam->pos.x = tmp.x;
+		cam->pos.y = tmp.y;
+	}
+}
+
+void	camera(t_cam *cam, int keycode)
+{
+	double	rotSpeed = ROTATE_SPEED;
+
+	if (keycode == L_ARR)
+		rotSpeed *= -1;
+	double oldDirX = cam->dir.x;
+	cam->dir.x = cam->dir.x * cos(rotSpeed) - cam->dir.y * sin(rotSpeed);
+	cam->dir.y = oldDirX * sin(rotSpeed) + cam->dir.y * cos(rotSpeed);
+	double oldPlaneX = cam->plane.x;
+	cam->plane.x = cam->plane.x * cos(rotSpeed) - cam->plane.y * sin(rotSpeed);
+	cam->plane.y = oldPlaneX * sin(rotSpeed) + cam->plane.y * cos(rotSpeed);
+}
+
 int	keypress(int keycode, t_data *data)
 {
 	if (keycode == ESC)
 		destroy(data);
+	else if (keycode == W || keycode == A || keycode == S || keycode == D)
+		move(data, data->cam, keycode);
+	else if (keycode == L_ARR || keycode == R_ARR)
+		camera(data->cam, keycode);
 	return (0);
 }
 
@@ -612,46 +674,238 @@ int	window_init(t_data *data, t_mlx *mlx)
 	}
 	mlx_hook(mlx->win, KeyPress, KeyPressMask, &keypress, data);
 	mlx_hook(mlx->win, DestroyNotify, StructureNotifyMask, &destroy, data);
-	mlx_loop(mlx->ptr);
 	return (0);
 }
 
-// int	draw(t_data *data, t_asset *asset, t_cam *cam)
-// {
-// 	size_t	x;
+void	img_pixel_put(t_img *img, int x, int y, int color)
+{
+    char    *pixel;
 
-// 	while (true)
-// 	{
-// 		x = 0;
-// 		while (x < WIDTH)
-// 		{
-// 			cam->cameraX = 2 * x / WIDTH - 1;
-// 			cam->rayDirX = cam->dirX + cam->planeX * cam->cameraX;
-// 			cam->rayDirY = cam->dirY + cam->planeY * cam->cameraX;
-// 		}
-// 	}
-// 	return (0);
-// }
+    pixel = img->addr + (y * img->size_line + x * (img->bpp / 8));
+    *(int *)pixel = color;
+}
 
-// int	get_coord(t_data *data)
-// {
-// 	data->map
-// }
+void draw_line(t_img *img, int x, int drawStart, int drawEnd, int color)
+{
+	int y;
 
-// int	camera_init(t_data *data, t_asset *asset, t_cam *cam)
-// {
-// 	double	posX;
-// 	double	posY; //x and y start position
-// 	double	dirX;
-// 	double	dirY; //initial direction vector
-// 	double	planeX;
-// 	double	planeY; //the 2d raycaster version of camera plane
-// 	double	time; //time of current frame
-// 	double	oldTime; //time of previous frame
-// 	double	cameraX; //x-coordinate in camera space
-// 	double	rayDirX;
-// 	double	rayDirY;
-// }
+	y = drawStart;
+	while (y <= drawEnd)
+	{
+		img_pixel_put(img, x, y, color);
+		y++;
+	}
+}
+
+int	draw(t_data *data)
+{
+	size_t	x;
+	t_img	img;
+	t_cam	*cam;
+	t_mlx	*mlx;
+
+	mlx = data->mlx;
+	cam = data->cam;
+	x = 0;
+	img.ptr = mlx_new_image(mlx->ptr, WIDTH, HEIGHT);
+	img.addr = mlx_get_data_addr(img.ptr, &img.bpp, &img.size_line, &img.endian);
+	while (x < WIDTH)
+	{
+		//calculate ray position and direction
+		cam->camera_x = 2 * x / (double)WIDTH - 1; //x-coordinate in camera space
+		cam->ray.x = cam->dir.x + cam->plane.x * cam->camera_x;
+		cam->ray.y = cam->dir.y + cam->plane.y * cam->camera_x;
+		//which box of the map we're in
+		size_t mapX = (size_t)cam->pos.x;
+		size_t mapY = (size_t)cam->pos.y;
+
+		//length of ray from current position to next x or y-side
+		double sideDistX;
+		double sideDistY;
+
+		//length of ray from one x or y-side to next x or y-side
+		//these are derived as:
+		//deltaDistX = sqrt(1 + (cam->ray.y * cam->ray.y) / (cam->ray.x * cam->ray.x))
+		//deltaDistY = sqrt(1 + (cam->ray.x * cam->ray.x) / (cam->ray.y * cam->ray.y))
+		//which can be simplified to abs(|rayDir| / cam->ray.x) and abs(|rayDir| / cam->ray.y)
+		//where |rayDir| is the length of the vector (cam->ray.x, cam->ray.y). Its length,
+		//unlike (dirX, dirY) is not 1, however this does not matter, only the
+		//ratio between deltaDistX and deltaDistY matters, due to the way the DDA
+		//stepping further below works. So the values can be computed as below.
+		// Division through zero is prevented, even though technically that's not
+		// needed in C++ with IEEE 754 floating point values.
+		double deltaDistX = ABS(1 / cam->ray.x);
+		double deltaDistY = ABS(1 / cam->ray.y);
+
+		double perpWallDist;
+
+		//what direction to step in x or y-direction (either +1 or -1)
+		int stepX;
+		int stepY;
+
+		int hit = 0; //was there a wall hit?
+		int side; //was a NS or a EW wall hit?
+		//calculate step and initial sideDist
+		if (cam->ray.x < 0)
+		{
+			stepX = -1;
+			sideDistX = (cam->pos.x - mapX) * deltaDistX;
+		}
+		else
+		{
+			stepX = 1;
+			sideDistX = (mapX + 1.0 - cam->pos.x) * deltaDistX;
+		}
+		if (cam->ray.y < 0)
+		{
+			stepY = -1;
+			sideDistY = (cam->pos.y - mapY) * deltaDistY;
+		}
+		else
+		{
+			stepY = 1;
+			sideDistY = (mapY + 1.0 - cam->pos.y) * deltaDistY;
+		}
+		//perform DDA
+		while (hit == 0)
+		{
+			//jump to next map square, either in x-direction, or in y-direction
+			if (sideDistX < sideDistY)
+			{
+				sideDistX += deltaDistX;
+				mapX += stepX;
+				side = 0;
+			}
+			else
+			{
+				sideDistY += deltaDistY;
+				mapY += stepY;
+				side = 1;
+			}
+			//Check if ray has hit a wall
+			if (data->map[mapY][mapX] == '1')
+				hit = 1;
+		}
+		//Calculate distance projected on camera direction. This is the shortest distance from the point where the wall is
+		//hit to the camera plane. Euclidean to center camera point would give fisheye effect!
+		//This can be computed as (mapX - posX + (1 - stepX) / 2) / cam->ray.x for side == 0, or same formula with Y
+		//for size == 1, but can be simplified to the code below thanks to how sideDist and deltaDist are computed:
+		//because they were left scaled to |rayDir|. sideDist is the entire length of the ray above after the multiple
+		//steps, but we subtract deltaDist once because one step more into the wall was taken above.
+		if (side == 0)
+			perpWallDist = (sideDistX - deltaDistX);
+		else
+			perpWallDist = (sideDistY - deltaDistY);
+
+		//Calculate height of line to draw on screen
+		int lineHeight = (int)(HEIGHT / perpWallDist);
+
+		//calculate lowest and highest pixel to fill in current stripe
+		int drawStart = -lineHeight / 2 + HEIGHT / 2;
+		if (drawStart < 0)
+			drawStart = 0;
+		int drawEnd = lineHeight / 2 + HEIGHT / 2;
+		if (drawEnd >= HEIGHT)
+			drawEnd = HEIGHT - 1;
+
+		size_t	color;
+		color = 0xFFFFFF;
+		//give x and y sides different brightness
+		if (side == 1)
+			color = 0x888888;
+
+		//draw the pixels of the stripe as a vertical line
+		draw_line(&img, x, drawStart, drawEnd, color);
+		x++;
+	}
+	mlx_put_image_to_window(mlx->ptr, mlx->win, img.ptr, 0, 0);
+	mlx_destroy_image(mlx->ptr, img.ptr);
+	return (0);
+}
+
+void	get_coord(t_data *data, t_cam *cam)
+{
+	while (cam->pos.y < data->height)
+	{
+		while (cam->pos.x < data->lengh)
+		{
+			if (ft_strchr("NSWE", data->map[(size_t)cam->pos.y][(size_t)cam->pos.x]))
+			{
+				cam->pos.x += 0.5;
+				cam->pos.y += 0.5;
+				return ;
+			}
+			cam->pos.x++;
+		}
+		cam->pos.y++;
+		cam->pos.x = 0;
+	}
+}
+
+void	get_dir(t_data *data, t_cam *cam)
+{
+	char c;
+
+	c = data->map[(size_t)cam->pos.y][(size_t)cam->pos.x];
+	if (c == 'N')
+	{
+		cam->dir.x = 0;
+		cam->dir.y = -1;
+	}
+	else if (c == 'S')
+	{
+		cam->dir.x = 0;
+		cam->dir.y = 1;
+	}
+	else if (c == 'W')
+	{
+		cam->dir.x = -1;
+		cam->dir.y = 0;
+	}
+	else if (c == 'E')
+	{
+		cam->dir.x = 1;
+		cam->dir.y = 0;
+	}
+}
+
+void	get_plane(t_data *data, t_cam *cam)
+{
+	char c;
+
+	c = data->map[(size_t)cam->pos.y][(size_t)cam->pos.x];
+	if (c == 'N')
+	{
+		cam->plane.x = 0.80;
+		cam->plane.y = 0;
+	}
+	else if (c == 'S')
+	{
+		cam->plane.x = -0.80;
+		cam->plane.y = 0;
+	}
+	else if (c == 'W')
+	{
+		cam->plane.x = 0;
+		cam->plane.y = -0.80;
+	}
+	else if (c == 'E')
+	{
+		cam->plane.x = 0;
+		cam->plane.y = 0.80;
+	}
+}
+
+void	camera_init(t_data *data, t_cam *cam)
+{
+	cam->pos.x = 0;
+	cam->pos.y = 0;
+	cam->time = 0;
+	cam->old_time = 0;
+	get_coord(data, cam);
+	get_dir(data, cam);
+	get_plane(data, cam);
+}
 
 int	main(int argc, const char *argv[])
 {
@@ -669,14 +923,13 @@ int	main(int argc, const char *argv[])
 		return (1);
 	if (map_check(&data))
 		return (1);
+	camera_init(&data, &cam);
 	display_asset(&asset);
 	display_map(data.map);
 	if (window_init(&data, &mlx))
 		return (1);
-	// if (camera_init(&data, &asset, &cam))
-	// 	return (1);
-	// if (draw(&data, &asset, &cam))
-	// 	return (1);
+	mlx_loop_hook(mlx.ptr, &draw, &data);
+	mlx_loop(mlx.ptr);
 	free_data(&data);
 	return (0);
 }

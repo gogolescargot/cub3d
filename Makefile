@@ -6,7 +6,7 @@
 #    By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/28 00:56:29 by ggalon            #+#    #+#              #
-#    Updated: 2024/04/09 20:23:33 by ggalon           ###   ########.fr        #
+#    Updated: 2024/04/13 16:19:52 by ggalon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,7 +52,7 @@ CC			=	cc
 
 CC_FLAGS	=	-Wall -Wextra -Werror -g3 -I $(INCL_DIR) -I $(LIBFT_DIR)$(INCL_DIR) -I $(MLX_DIR)
 
-MLX_FLAGS	=	-lXext -lX11
+MLX_FLAGS	=	-lXext -lX11 -lm
 
 NORM		=	norminette $(SRCS_DIR) $(INCL_DIR)
 
