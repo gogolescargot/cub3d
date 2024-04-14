@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/14 06:12:55 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/14 21:16:48 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -583,6 +583,7 @@ void	struct_init(t_data *data, t_asset *asset, t_mlx	*mlx, t_cam *cam)
 
 int	destroy(t_data *data)
 {
+	mlx_destroy_image(data->mlx->ptr, data->mlx->img->ptr);
 	mlx_destroy_window(data->mlx->ptr, data->mlx->win);
 	mlx_destroy_display(data->mlx->ptr);
 	ft_free(data->mlx->ptr);
@@ -670,7 +671,7 @@ int	keypress(int keycode, t_data *data)
 	return (0);
 }
 
-int	window_init(t_data *data, t_mlx *mlx)
+int	window_init(t_data *data, t_mlx *mlx, t_img *img)
 {
 	mlx->ptr = mlx_init();
 	if (!mlx->ptr)
@@ -683,10 +684,23 @@ int	window_init(t_data *data, t_mlx *mlx)
 	if (!mlx->win)
 	{
 		error("minilibX window failed");
+		mlx_destroy_display(data->mlx->ptr);
 		free_data(data);
 		ft_free(mlx->ptr);
 		return (1);
 	}
+	img->ptr = mlx_new_image(mlx->ptr, WIDTH, HEIGHT);
+	if (!img->ptr)
+	{
+		error("minilibX image failed");
+		mlx_destroy_window(data->mlx->ptr, data->mlx->win);
+		mlx_destroy_display(data->mlx->ptr);
+		free_data(data);
+		ft_free(mlx->ptr);
+		return (1);
+	}
+	img->addr = mlx_get_data_addr(img->ptr, &img->bpp, &img->size_line, &img->endian);
+	mlx->img = img;
 	mlx_hook(mlx->win, KeyPress, KeyPressMask, &keypress, data);
 	mlx_hook(mlx->win, DestroyNotify, StructureNotifyMask, &destroy, data);
 	return (0);
@@ -746,23 +760,21 @@ double	absolute(double nbr)
 int	draw(t_data *data)
 {
 	int		x;
-	t_img	img;
 	t_cam	*cam;
 	t_mlx	*mlx;
+	t_img	*img;
 
 	mlx = data->mlx;
 	cam = data->cam;
+	img = mlx->img;
 	x = 0;
-	img.ptr = mlx_new_image(mlx->ptr, WIDTH, HEIGHT);
-	img.addr = mlx_get_data_addr(img.ptr, &img.bpp, &img.size_line, &img.endian);
-	draw_color(data->asset, &img);
+	draw_color(data->asset, img);
 	while (x < WIDTH)
 	{
 		//calculate ray position and direction
 		cam->camera_x = 2 * x / (double)WIDTH - 1; //x-coordinate in camera space
 		cam->ray.x = cam->dir.x + cam->plane.x * cam->camera_x;
 		cam->ray.y = cam->dir.y + cam->plane.y * cam->camera_x;
-		//which box of the map we're in
 		int mapX = (int)cam->pos.x;
 		int mapY = (int)cam->pos.y;
 
@@ -821,13 +833,19 @@ int	draw(t_data *data)
 			{
 				sideDistX += deltaDistX;
 				mapX += stepX;
-				side = 0;
+				if (stepX == 1)
+					side = WEST;
+				else
+					side = EAST;
 			}
 			else
 			{
 				sideDistY += deltaDistY;
 				mapY += stepY;
-				side = 1;
+				if (stepY == 1)
+					side = NORTH;
+				else
+					side = SOUTH;
 			}
 			//Check if ray has hit a wall
 			if (data->map[mapY][mapX] == '1')
@@ -839,7 +857,7 @@ int	draw(t_data *data)
 		//for size == 1, but can be simplified to the code below thanks to how sideDist and deltaDist are computed:
 		//because they were left scaled to |rayDir|. sideDist is the entire length of the ray above after the multiple
 		//steps, but we subtract deltaDist once because one step more into the wall was taken above.
-		if (side == 0)
+		if (side == EAST || side == WEST)
 			perpWallDist = (sideDistX - deltaDistX);
 		else
 			perpWallDist = (sideDistY - deltaDistY);
@@ -856,17 +874,21 @@ int	draw(t_data *data)
 			drawEnd = HEIGHT - 1;
 
 		int	color;
-		color = 0xFFFFFF;
+		
 		//give x and y sides different brightness
-		if (side == 1)
-			color = 0x888888;
-
+		if (side == NORTH)
+			color = 0xFF0000;
+		if (side == SOUTH)
+			color = 0x00FF00;
+		if (side == WEST)
+			color = 0x0000FF;
+		if (side == EAST)
+			color = 0xFF00FF;
 		//draw the pixels of the stripe as a vertical line
-		draw_line(&img, x, drawStart, drawEnd, color);
+		draw_line(img, x, drawStart, drawEnd, color);
 		x++;
 	}
-	mlx_put_image_to_window(mlx->ptr, mlx->win, img.ptr, 0, 0);
-	mlx_destroy_image(mlx->ptr, img.ptr);
+	mlx_put_image_to_window(mlx->ptr, mlx->win, img->ptr, 0, 0);
 	return (0);
 }
 
@@ -958,6 +980,7 @@ int	main(int argc, const char *argv[])
 	t_asset	asset;
 	t_mlx	mlx;
 	t_cam	cam;
+	t_img	img;
 
 	struct_init(&data, &asset, &mlx, &cam);
 	if (args_check(argc, argv))
@@ -971,7 +994,7 @@ int	main(int argc, const char *argv[])
 	camera_init(&data, &cam);
 	display_asset(&asset);
 	display_map(data.map);
-	if (window_init(&data, &mlx))
+	if (window_init(&data, &mlx, &img))
 		return (1);
 	mlx_loop_hook(mlx.ptr, &draw, &data);
 	mlx_loop(mlx.ptr);

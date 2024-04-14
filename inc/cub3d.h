@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/14 05:53:23 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/14 20:55:16 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@
 # define D 100
 # define L_ARR 65361
 # define R_ARR 65363
+
+# define NORTH 0
+# define SOUTH 1
+# define WEST 2
+# define EAST 3
 
 # define WIDTH 800
 # define HEIGHT 600
@@ -72,6 +77,7 @@ typedef struct s_mlx
 {
 	void	*ptr;
 	void	*win;
+	t_img	*img;
 }	t_mlx;
 
 typedef struct s_asset
