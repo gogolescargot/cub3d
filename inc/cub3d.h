@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/14 01:22:01 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/14 05:53:23 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,8 @@
 
 # define PI 3.14159265359
 
-# define ROTATE_SPEED (360 / 20) * PI / 180
+# define ROTATE_SPEED 0.31416
 # define MOVE_SPEED 0.1
-
-# define ABS(Value) Value * ((Value > 0) - (Value < 0))
 
 typedef struct s_vector
 {
@@ -52,25 +50,22 @@ typedef struct s_point
 	double	y;
 }	t_point;
 
-typedef	struct s_cam
+typedef struct s_cam
 {
 	t_point		pos;
 	t_vector	dir;
 	t_vector	plane;
 	t_vector	ray;
-	double	time; //time of current frame
-	double	old_time; //time of previous frame
-	double	camera_x; //x-coordinate in camera space
-	
+	double		camera_x;
 }	t_cam;
 
 typedef struct s_img
 {
-    void	*ptr;
-    char	*addr;
-    int		bpp;
-    int		size_line;
-    int		endian;
+	void	*ptr;
+	char	*addr;
+	int		bpp;
+	int		size_line;
+	int		endian;
 }	t_img;
 
 typedef struct s_mlx
@@ -85,16 +80,16 @@ typedef struct s_asset
 	char	*so;
 	char	*ea;
 	char	*we;
-	size_t	fl;
-	size_t	ce;
+	int		fl;
+	int		ce;
 }	t_asset;
 
 typedef struct s_data
 {
 	t_list	*file;
 	char	**map;
-	size_t	height;
-	size_t	lengh;
+	int		height;
+	int		lengh;
 	t_asset	*asset;
 	t_mlx	*mlx;
 	t_cam	*cam;

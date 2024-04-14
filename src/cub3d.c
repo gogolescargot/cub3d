@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/14 01:22:12 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/14 06:12:55 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,21 @@ int	init_type(char ***type)
 	return (0);
 }
 
-int	format_asset_color(char *str, size_t *rgb)
+int	atoi_color(char	**color, int *r, int *g, int *b)
+{
+	*r = ft_atoi(color[0]);
+	*g = ft_atoi(color[1]);
+	*b = ft_atoi(color[2]);
+	if (*r < 0 || *r > 255 || *g < 0 || *g > 255 || *b < 0 || *b > 255)
+	{
+		ft_arrayclear(color);
+		error("Out of range color");
+		return (1);
+	}
+	return (0);
+}
+
+int	format_asset_color(char *str, int *rgb)
 {
 	char	**color;
 	int		r;
@@ -126,15 +140,8 @@ int	format_asset_color(char *str, size_t *rgb)
 		error("Wrong color format");
 		return (1);
 	}
-	r = ft_atoi(color[0]);
-	g = ft_atoi(color[1]);
-	b = ft_atoi(color[2]);
-	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-	{
-		ft_arrayclear(color);
-		error("Out of range color");
+	if (atoi_color(color, &r, &g, &b))
 		return (1);
-	}
 	*rgb = (r << 16) + (g << 8) + b;
 	ft_arrayclear(color);
 	return (0);
@@ -226,11 +233,11 @@ int	map_asset(t_asset *asset, const char *str, int i)
 	return (0);
 }
 
-size_t	get_max_strlen(t_list *lst)
+int	get_max_strlen(t_list *lst)
 {
 	t_list	*cur;
-	size_t	max;
-	size_t	len;
+	int		max;
+	int		len;
 
 	max = 0;
 	cur = lst;
@@ -244,9 +251,9 @@ size_t	get_max_strlen(t_list *lst)
 	return (max);
 }
 
-int	insert_string_array(t_data *data, char *str, size_t max_len, char **dst)
+int	insert_string_array(t_data *data, char *str, int max_len, char **dst)
 {
-	size_t	len;
+	int	len;
 
 	len = ft_strlen(str);
 	*dst = ft_calloc(max_len + 1, sizeof(char));
@@ -263,7 +270,7 @@ int	insert_string_array(t_data *data, char *str, size_t max_len, char **dst)
 
 int	init_string_array(t_data *data, t_list *map)
 {
-	size_t	i;
+	int		i;
 	char	*tmp;
 
 	i = 0;
@@ -306,10 +313,7 @@ int	map_init(t_data *data, t_asset *asset)
 			i++;
 		}
 		else if (!is_empty(cur->content))
-		{
-			init_string_array(data, cur);
-			return (0);
-		}
+			return (init_string_array(data, cur));
 		cur = cur->next;
 	}
 	error("Missing map");
@@ -367,7 +371,7 @@ void	display_asset(t_asset *asset)
 
 void	display_map(char **map)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
 	while (map[i])
@@ -408,8 +412,8 @@ int	check_asset(t_data *data, t_asset *asset)
 
 int	check_map_char(t_data *data)
 {
-	size_t	i;
-	size_t	j;
+	int	i;
+	int	j;
 
 	i = 0;
 	j = 0;
@@ -431,7 +435,7 @@ int	check_map_char(t_data *data)
 	return (0);
 }
 
-bool	is_border(t_data *data, size_t i, size_t j)
+bool	is_border(t_data *data, int i, int j)
 {
 	if (i == 0 || i == data->height - 1)
 		return (true);
@@ -440,7 +444,7 @@ bool	is_border(t_data *data, size_t i, size_t j)
 	return (false);
 }
 
-int	dfs(t_data *data, char **str_map, size_t i, size_t j)
+int	dfs(t_data *data, char **str_map, int i, int j)
 {
 	if (is_border(data, i, j) && !ft_strchr("1", str_map[i][j]))
 		return (1);
@@ -460,7 +464,7 @@ int	dfs(t_data *data, char **str_map, size_t i, size_t j)
 	return (0);
 }
 
-bool	is_coord(t_data *data, char **str_map, size_t *i, size_t *j)
+bool	is_coord(t_data *data, char **str_map, int *i, int *j)
 {
 	*i = 0;
 	*j = 0;
@@ -482,7 +486,7 @@ bool	is_coord(t_data *data, char **str_map, size_t *i, size_t *j)
 
 int	dup_map(t_data *data, char ***dst)
 {
-	size_t	i;
+	int		i;
 	char	*tmp;
 
 	i = 0;
@@ -504,8 +508,8 @@ int	dup_map(t_data *data, char ***dst)
 
 int	check_map_border(t_data *data)
 {
-	size_t	i;
-	size_t	j;
+	int		i;
+	int		j;
 	char	**map_dfs;
 
 	if (dup_map(data, &map_dfs))
@@ -526,9 +530,9 @@ int	check_map_border(t_data *data)
 
 int	check_map_entities(t_data *data)
 {
-	size_t	spawn;
-	size_t	i;
-	size_t	j;
+	int	spawn;
+	int	i;
+	int	j;
 
 	spawn = 0;
 	i = 0;
@@ -586,14 +590,37 @@ int	destroy(t_data *data)
 	exit(0);
 }
 
-
 bool	is_outside(t_data *data, t_point *point)
 {
-	if ((size_t)point->x <= 0 || (size_t)point->x >= data->lengh - 1)
+	if (point->x <= 1.01 || point->x >= data->lengh - 1.01)
 		return (true);
-	if ((size_t)point->y <= 0 || (size_t)point->y >= data->height - 1)
+	if (point->y <= 1.01 || point->y >= data->height - 1.01)
 		return (true);
 	return (false);
+}
+
+void	move_point(t_cam *cam, t_point *tmp, t_vector *move_dir, int keycode)
+{
+	if (keycode == W)
+	{
+		tmp->x = cam->pos.x + move_dir->x;
+		tmp->y = cam->pos.y + move_dir->y;
+	}
+	else if (keycode == A)
+	{
+		tmp->x = cam->pos.x + move_dir->y;
+		tmp->y = cam->pos.y - move_dir->x;
+	}
+	else if (keycode == S)
+	{
+		tmp->x = cam->pos.x - move_dir->x;
+		tmp->y = cam->pos.y - move_dir->y;
+	}
+	else if (keycode == D)
+	{
+		tmp->x = cam->pos.x - move_dir->y;
+		tmp->y = cam->pos.y + move_dir->x;
+	}
 }
 
 void	move(t_data *data, t_cam *cam, int keycode)
@@ -603,26 +630,7 @@ void	move(t_data *data, t_cam *cam, int keycode)
 
 	move_dir.x = cam->dir.x * MOVE_SPEED;
 	move_dir.y = cam->dir.y * MOVE_SPEED;
-	if (keycode == W)
-	{
-		tmp.x = cam->pos.x + move_dir.x;
-		tmp.y = cam->pos.y + move_dir.y;
-	}
-	else if (keycode == A)
-	{
-		tmp.x = cam->pos.x + move_dir.y;
-		tmp.y = cam->pos.y - move_dir.x;
-	}
-	else if (keycode == S)
-	{
-		tmp.x = cam->pos.x - move_dir.x;
-		tmp.y = cam->pos.y - move_dir.y;
-	}
-	else if (keycode == D)
-	{
-		tmp.x = cam->pos.x - move_dir.y;
-		tmp.y = cam->pos.y + move_dir.x;
-	}
+	move_point(cam, &tmp, &move_dir, keycode);
 	if (!is_outside(data, &tmp))
 	{
 		cam->pos.x = tmp.x;
@@ -632,16 +640,23 @@ void	move(t_data *data, t_cam *cam, int keycode)
 
 void	camera(t_cam *cam, int keycode)
 {
-	double	rotSpeed = ROTATE_SPEED;
+	double	rotate_speed;
+	double	old_plane_x;
+	double	old_dir_x;
 
+	rotate_speed = ROTATE_SPEED;
 	if (keycode == L_ARR)
-		rotSpeed *= -1;
-	double oldDirX = cam->dir.x;
-	cam->dir.x = cam->dir.x * cos(rotSpeed) - cam->dir.y * sin(rotSpeed);
-	cam->dir.y = oldDirX * sin(rotSpeed) + cam->dir.y * cos(rotSpeed);
-	double oldPlaneX = cam->plane.x;
-	cam->plane.x = cam->plane.x * cos(rotSpeed) - cam->plane.y * sin(rotSpeed);
-	cam->plane.y = oldPlaneX * sin(rotSpeed) + cam->plane.y * cos(rotSpeed);
+		rotate_speed *= -1;
+	old_dir_x = cam->dir.x;
+	cam->dir.x = cam->dir.x * cos(rotate_speed)
+		- cam->dir.y * sin(rotate_speed);
+	cam->dir.y = old_dir_x * sin(rotate_speed)
+		+ cam->dir.y * cos(rotate_speed);
+	old_plane_x = cam->plane.x;
+	cam->plane.x = cam->plane.x * cos(rotate_speed)
+		- cam->plane.y * sin(rotate_speed);
+	cam->plane.y = old_plane_x * sin(rotate_speed)
+		+ cam->plane.y * cos(rotate_speed);
 }
 
 int	keypress(int keycode, t_data *data)
@@ -679,15 +694,15 @@ int	window_init(t_data *data, t_mlx *mlx)
 
 void	img_pixel_put(t_img *img, int x, int y, int color)
 {
-    char    *pixel;
+	char	*pixel;
 
-    pixel = img->addr + (y * img->size_line + x * (img->bpp / 8));
-    *(int *)pixel = color;
+	pixel = img->addr + (y * img->size_line + x * (img->bpp / 8));
+	*(int *)pixel = color;
 }
 
-void draw_line(t_img *img, int x, int drawStart, int drawEnd, int color)
+void	draw_line(t_img *img, int x, int drawStart, int drawEnd, int color)
 {
-	int y;
+	int	y;
 
 	y = drawStart;
 	while (y <= drawEnd)
@@ -697,9 +712,40 @@ void draw_line(t_img *img, int x, int drawStart, int drawEnd, int color)
 	}
 }
 
+void	draw_color(t_asset *asset, t_img *img)
+{
+	int	x;
+	int	y;
+	int	color;
+
+	x = 0;
+	y = 0;
+	while (y < HEIGHT - 1)
+	{
+		if (y < HEIGHT / 2)
+			color = asset->ce;
+		else
+			color = asset->fl;
+		while (x < WIDTH - 1)
+		{
+			img_pixel_put(img, x, y, color);
+			x++;
+		}
+		y++;
+		x = 0;
+	}
+}
+
+double	absolute(double nbr)
+{
+	if (nbr < 0)
+		return (nbr *= -1);
+	return (nbr);
+}
+
 int	draw(t_data *data)
 {
-	size_t	x;
+	int		x;
 	t_img	img;
 	t_cam	*cam;
 	t_mlx	*mlx;
@@ -709,6 +755,7 @@ int	draw(t_data *data)
 	x = 0;
 	img.ptr = mlx_new_image(mlx->ptr, WIDTH, HEIGHT);
 	img.addr = mlx_get_data_addr(img.ptr, &img.bpp, &img.size_line, &img.endian);
+	draw_color(data->asset, &img);
 	while (x < WIDTH)
 	{
 		//calculate ray position and direction
@@ -716,8 +763,8 @@ int	draw(t_data *data)
 		cam->ray.x = cam->dir.x + cam->plane.x * cam->camera_x;
 		cam->ray.y = cam->dir.y + cam->plane.y * cam->camera_x;
 		//which box of the map we're in
-		size_t mapX = (size_t)cam->pos.x;
-		size_t mapY = (size_t)cam->pos.y;
+		int mapX = (int)cam->pos.x;
+		int mapY = (int)cam->pos.y;
 
 		//length of ray from current position to next x or y-side
 		double sideDistX;
@@ -734,8 +781,8 @@ int	draw(t_data *data)
 		//stepping further below works. So the values can be computed as below.
 		// Division through zero is prevented, even though technically that's not
 		// needed in C++ with IEEE 754 floating point values.
-		double deltaDistX = ABS(1 / cam->ray.x);
-		double deltaDistY = ABS(1 / cam->ray.y);
+		double deltaDistX = absolute(1 / cam->ray.x);
+		double deltaDistY = absolute(1 / cam->ray.y);
 
 		double perpWallDist;
 
@@ -808,7 +855,7 @@ int	draw(t_data *data)
 		if (drawEnd >= HEIGHT)
 			drawEnd = HEIGHT - 1;
 
-		size_t	color;
+		int	color;
 		color = 0xFFFFFF;
 		//give x and y sides different brightness
 		if (side == 1)
@@ -829,7 +876,7 @@ void	get_coord(t_data *data, t_cam *cam)
 	{
 		while (cam->pos.x < data->lengh)
 		{
-			if (ft_strchr("NSWE", data->map[(size_t)cam->pos.y][(size_t)cam->pos.x]))
+			if (ft_strchr("NSWE", data->map[(int)cam->pos.y][(int)cam->pos.x]))
 			{
 				cam->pos.x += 0.5;
 				cam->pos.y += 0.5;
@@ -844,9 +891,9 @@ void	get_coord(t_data *data, t_cam *cam)
 
 void	get_dir(t_data *data, t_cam *cam)
 {
-	char c;
+	char	c;
 
-	c = data->map[(size_t)cam->pos.y][(size_t)cam->pos.x];
+	c = data->map[(int)cam->pos.y][(int)cam->pos.x];
 	if (c == 'N')
 	{
 		cam->dir.x = 0;
@@ -871,9 +918,9 @@ void	get_dir(t_data *data, t_cam *cam)
 
 void	get_plane(t_data *data, t_cam *cam)
 {
-	char c;
+	char	c;
 
-	c = data->map[(size_t)cam->pos.y][(size_t)cam->pos.x];
+	c = data->map[(int)cam->pos.y][(int)cam->pos.x];
 	if (c == 'N')
 	{
 		cam->plane.x = 0.80;
@@ -900,8 +947,6 @@ void	camera_init(t_data *data, t_cam *cam)
 {
 	cam->pos.x = 0;
 	cam->pos.y = 0;
-	cam->time = 0;
-	cam->old_time = 0;
 	get_coord(data, cam);
 	get_dir(data, cam);
 	get_plane(data, cam);
