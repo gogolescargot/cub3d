@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/14 21:16:48 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/16 13:09:00 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -581,9 +581,22 @@ void	struct_init(t_data *data, t_asset *asset, t_mlx	*mlx, t_cam *cam)
 	asset->ea = NULL;
 }
 
+void	destroy_asset(t_mlx *mlx)
+{
+	if (mlx->no.ptr)
+		mlx_destroy_image(mlx->ptr, mlx->no.ptr);
+	if (mlx->so.ptr)
+		mlx_destroy_image(mlx->ptr, mlx->so.ptr);
+	if (mlx->we.ptr)
+		mlx_destroy_image(mlx->ptr, mlx->we.ptr);
+	if (mlx->ea.ptr)
+		mlx_destroy_image(mlx->ptr, mlx->ea.ptr);
+}
+
 int	destroy(t_data *data)
 {
-	mlx_destroy_image(data->mlx->ptr, data->mlx->img->ptr);
+	destroy_asset(data->mlx);
+	mlx_destroy_image(data->mlx->ptr, data->mlx->img.ptr);
 	mlx_destroy_window(data->mlx->ptr, data->mlx->win);
 	mlx_destroy_display(data->mlx->ptr);
 	ft_free(data->mlx->ptr);
@@ -671,7 +684,7 @@ int	keypress(int keycode, t_data *data)
 	return (0);
 }
 
-int	window_init(t_data *data, t_mlx *mlx, t_img *img)
+int	window_init(t_data *data, t_mlx *mlx)
 {
 	mlx->ptr = mlx_init();
 	if (!mlx->ptr)
@@ -689,8 +702,8 @@ int	window_init(t_data *data, t_mlx *mlx, t_img *img)
 		ft_free(mlx->ptr);
 		return (1);
 	}
-	img->ptr = mlx_new_image(mlx->ptr, WIDTH, HEIGHT);
-	if (!img->ptr)
+	mlx->img.ptr = mlx_new_image(mlx->ptr, WIDTH, HEIGHT);
+	if (!mlx->img.ptr)
 	{
 		error("minilibX image failed");
 		mlx_destroy_window(data->mlx->ptr, data->mlx->win);
@@ -699,31 +712,19 @@ int	window_init(t_data *data, t_mlx *mlx, t_img *img)
 		ft_free(mlx->ptr);
 		return (1);
 	}
-	img->addr = mlx_get_data_addr(img->ptr, &img->bpp, &img->size_line, &img->endian);
-	mlx->img = img;
+	mlx->img.addr = mlx_get_data_addr(mlx->img.ptr, &mlx->img.bpp, &mlx->img.size_line, &mlx->img.endian);
+	mlx->img = mlx->img;
 	mlx_hook(mlx->win, KeyPress, KeyPressMask, &keypress, data);
 	mlx_hook(mlx->win, DestroyNotify, StructureNotifyMask, &destroy, data);
 	return (0);
 }
 
-void	img_pixel_put(t_img *img, int x, int y, int color)
+void	img_pixel_put(t_img *img, int x, int y, unsigned int color)
 {
 	char	*pixel;
 
 	pixel = img->addr + (y * img->size_line + x * (img->bpp / 8));
 	*(int *)pixel = color;
-}
-
-void	draw_line(t_img *img, int x, int drawStart, int drawEnd, int color)
-{
-	int	y;
-
-	y = drawStart;
-	while (y <= drawEnd)
-	{
-		img_pixel_put(img, x, y, color);
-		y++;
-	}
 }
 
 void	draw_color(t_asset *asset, t_img *img)
@@ -766,7 +767,7 @@ int	draw(t_data *data)
 
 	mlx = data->mlx;
 	cam = data->cam;
-	img = mlx->img;
+	img = &mlx->img;
 	x = 0;
 	draw_color(data->asset, img);
 	while (x < WIDTH)
@@ -848,7 +849,9 @@ int	draw(t_data *data)
 					side = SOUTH;
 			}
 			//Check if ray has hit a wall
-			if (data->map[mapY][mapX] == '1')
+			if (mapY < 0 || mapY > data->height - 1 || mapX < 0 || mapX > data->lengh - 1)
+				hit = 1;
+			else if (data->map[mapY][mapX] == '1')
 				hit = 1;
 		}
 		//Calculate distance projected on camera direction. This is the shortest distance from the point where the wall is
@@ -873,19 +876,61 @@ int	draw(t_data *data)
 		if (drawEnd >= HEIGHT)
 			drawEnd = HEIGHT - 1;
 
-		int	color;
+		// int	color;
 		
-		//give x and y sides different brightness
-		if (side == NORTH)
-			color = 0xFF0000;
-		if (side == SOUTH)
-			color = 0x00FF00;
-		if (side == WEST)
-			color = 0x0000FF;
-		if (side == EAST)
-			color = 0xFF00FF;
-		//draw the pixels of the stripe as a vertical line
-		draw_line(img, x, drawStart, drawEnd, color);
+		// //give x and y sides different brightness
+		// if (side == NORTH)
+		// 	color = 0xFF0000;
+		// if (side == SOUTH)
+		// 	color = 0x00FF00;
+		// if (side == WEST)
+		// 	color = 0x0000FF;
+		// if (side == EAST)
+		// 	color = 0xFF00FF;
+		// //draw the pixels of the stripe as a vertical line
+		// draw_line(img, x, drawStart, drawEnd, color);
+		// int texNum = data->map[mapX][mapY] - 1; //1 subtracted from it so that texture 0 can be used!
+
+		//calculate value of wallX
+		double wallX; //where exactly the wall was hit
+		if (side == WEST || side == EAST)
+			wallX = cam->pos.y + perpWallDist * cam->ray.y;
+		else
+			wallX = cam->pos.x + perpWallDist * cam->ray.x;
+		wallX -= floor(wallX);
+
+		//x coordinate on the texture
+		int texX = (int)(wallX * (double)WIDTH_TEXTURE);
+		if ((side == WEST || side == EAST) && cam->ray.x > 0)
+			texX = WIDTH_TEXTURE - texX - 1;
+		if ((side == NORTH || side == SOUTH) && cam->ray.y < 0)
+			texX = WIDTH_TEXTURE - texX - 1;
+
+		// TODO: an integer-only bresenham or DDA like algorithm could make the texture coordinate stepping faster
+		// How much to increase the texture coordinate per screen pixel
+		double step = 1.0 * HEIGHT_TEXTURE / lineHeight;
+		// Starting texture coordinate
+		double texPos = (drawStart - HEIGHT / 2 + lineHeight / 2) * step;
+		int	y = drawStart;
+		while (y < drawEnd)
+		{
+			// Cast the texture coordinate to integer, and mask with (texHeight - 1) in case of overflow
+			int texY = texPos;
+			texPos += step;
+			char *pixel;
+			if (side == NORTH)
+				pixel = mlx->no.addr + (texY * mlx->no.size_line + texX * (mlx->no.bpp / 8));
+			else if (side == SOUTH)
+				pixel = mlx->so.addr + (texY * mlx->so.size_line + texX * (mlx->no.bpp / 8));
+			else if (side == WEST)
+				pixel = mlx->we.addr + (texY * mlx->we.size_line + texX * (mlx->no.bpp / 8));
+			else if (side == EAST)
+				pixel = mlx->ea.addr + (texY * mlx->ea.size_line + texX * (mlx->no.bpp / 8));
+			int color;
+			color = *(int *)pixel;
+			img_pixel_put(img, x, y, color);
+			y++;
+		}
 		x++;
 	}
 	mlx_put_image_to_window(mlx->ptr, mlx->win, img->ptr, 0, 0);
@@ -974,13 +1019,32 @@ void	camera_init(t_data *data, t_cam *cam)
 	get_plane(data, cam);
 }
 
+int	asset_init(t_data *data, t_asset *asset, t_mlx *mlx)
+{
+	int	tmp;
+	mlx->no.ptr = mlx_xpm_file_to_image(mlx->ptr, asset->no, &tmp, &tmp);
+	mlx->so.ptr = mlx_xpm_file_to_image(mlx->ptr, asset->so, &tmp, &tmp);
+	mlx->we.ptr = mlx_xpm_file_to_image(mlx->ptr, asset->we, &tmp, &tmp);
+	mlx->ea.ptr = mlx_xpm_file_to_image(mlx->ptr, asset->ea, &tmp, &tmp);
+	if (!mlx->no.ptr || !mlx->so.ptr || !mlx->we.ptr || !mlx->ea.ptr)
+	{
+		error("Asset error");
+		destroy(data);
+		return (1);
+	}
+	mlx->no.addr = mlx_get_data_addr(mlx->no.ptr, &mlx->no.bpp, &mlx->no.size_line, &mlx->no.endian);
+	mlx->so.addr = mlx_get_data_addr(mlx->so.ptr, &mlx->so.bpp, &mlx->so.size_line, &mlx->so.endian);
+	mlx->we.addr = mlx_get_data_addr(mlx->we.ptr, &mlx->we.bpp, &mlx->we.size_line, &mlx->we.endian);
+	mlx->ea.addr = mlx_get_data_addr(mlx->ea.ptr, &mlx->ea.bpp, &mlx->ea.size_line, &mlx->ea.endian);
+	return (0);
+}
+
 int	main(int argc, const char *argv[])
 {
 	t_data	data;
 	t_asset	asset;
 	t_mlx	mlx;
 	t_cam	cam;
-	t_img	img;
 
 	struct_init(&data, &asset, &mlx, &cam);
 	if (args_check(argc, argv))
@@ -994,10 +1058,12 @@ int	main(int argc, const char *argv[])
 	camera_init(&data, &cam);
 	display_asset(&asset);
 	display_map(data.map);
-	if (window_init(&data, &mlx, &img))
+	if (window_init(&data, &mlx))
+		return (1);
+	if (asset_init(&data, &asset, &mlx))
 		return (1);
 	mlx_loop_hook(mlx.ptr, &draw, &data);
 	mlx_loop(mlx.ptr);
-	free_data(&data);
+	destroy(&data);
 	return (0);
 }

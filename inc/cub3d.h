@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/14 20:55:16 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/16 13:03:31 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,12 @@
 # define WIDTH 800
 # define HEIGHT 600
 
+# define WIDTH_TEXTURE 450
+# define HEIGHT_TEXTURE 450
+
 # define PI 3.14159265359
 
-# define ROTATE_SPEED 0.31416
+# define ROTATE_SPEED 0.031416
 # define MOVE_SPEED 0.1
 
 typedef struct s_vector
@@ -77,7 +80,11 @@ typedef struct s_mlx
 {
 	void	*ptr;
 	void	*win;
-	t_img	*img;
+	t_img	img;
+	t_img	no;
+	t_img	so;
+	t_img	we;
+	t_img	ea;
 }	t_mlx;
 
 typedef struct s_asset
