@@ -6,7 +6,7 @@
 #    By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/28 00:56:29 by ggalon            #+#    #+#              #
-#    Updated: 2024/04/16 11:57:56 by ggalon           ###   ########.fr        #
+#    Updated: 2024/04/18 04:08:49 by ggalon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ LIBFT	=	$(LIBFT_DIR)libft.a
 
 MLX		=	$(MLX_DIR)libmlx_Linux.a
 
-FILE_C	=	cub3d
+FILE_C	=	cub3d file map_1 map_2 map_3 camera window asset_1 asset_2 draw_1 draw_2 bool utils_1 utils_2
 
 FILE_CB	=	
 
