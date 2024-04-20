@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/18 04:01:17 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 07:22:48 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,11 @@ void	draw_color(t_asset *asset, t_img *img)
 
 void	draw_init(t_cam *cam, t_draw *draw)
 {
-	cam->camera_x = 2 * draw->screen.x / (double)WIDTH - 1;
+	cam->camera_x = draw->screen.x * 2.0 / WIDTH - 1;
 	cam->ray.x = cam->dir.x + cam->plane.x * cam->camera_x;
 	cam->ray.y = cam->dir.y + cam->plane.y * cam->camera_x;
-	draw->map.x = (int)cam->pos.x;
-	draw->map.y = (int)cam->pos.y;
+	draw->map.x = cam->pos.x;
+	draw->map.y = cam->pos.y;
 	draw->delta_dist.x = absolute(1 / cam->ray.x);
 	draw->delta_dist.y = absolute(1 / cam->ray.y);
 }
@@ -83,7 +83,7 @@ void	draw_dir(t_cam *cam, t_draw *draw)
 	else
 	{
 		draw->step_dir.x = 1;
-		draw->dist.x = (draw->map.x + 1.0 - cam->pos.x) * draw->delta_dist.x;
+		draw->dist.x = (draw->map.x + 1 - cam->pos.x) * draw->delta_dist.x;
 	}
 	if (cam->ray.y < 0)
 	{
@@ -93,7 +93,7 @@ void	draw_dir(t_cam *cam, t_draw *draw)
 	else
 	{
 		draw->step_dir.y = 1;
-		draw->dist.y = (draw->map.y + 1.0 - cam->pos.y) * draw->delta_dist.y;
+		draw->dist.y = (draw->map.y + 1 - cam->pos.y) * draw->delta_dist.y;
 	}
 }
 

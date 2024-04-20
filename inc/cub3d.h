@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/18 03:30:53 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/19 09:41:28 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 # define PI 3.14159265359
 
 # define ROTATE_SPEED 0.031416
-# define MOVE_SPEED 0.1
+# define MOVE_SPEED 0.05
 
 typedef struct s_vector
 {

@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 04:00:44 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/18 04:01:21 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/19 09:54:35 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 void	draw_assset_bounds(t_draw *draw)
 {
 	if (draw->side == EAST || draw->side == WEST)
-		draw->perp_wall_dist = (draw->dist.x - draw->delta_dist.x);
+		draw->perp_wall_dist = draw->dist.x - draw->delta_dist.x;
 	else
-		draw->perp_wall_dist = (draw->dist.y - draw->delta_dist.y);
-	draw->line_height = (int)(HEIGHT / draw->perp_wall_dist);
+		draw->perp_wall_dist = draw->dist.y - draw->delta_dist.y;
+	draw->line_height = HEIGHT / draw->perp_wall_dist;
 	draw->draw_start = -draw->line_height / 2 + HEIGHT / 2;
 	if (draw->draw_start < 0)
 		draw->draw_start = 0;
@@ -34,7 +34,7 @@ void	draw_assset_pixel(t_cam *cam, t_draw *draw)
 	else
 		draw->wall_x = cam->pos.x + draw->perp_wall_dist * cam->ray.x;
 	draw->wall_x -= floor(draw->wall_x);
-	draw->wall_pixel.x = (int)(draw->wall_x * (double)WIDTH_TEXTURE);
+	draw->wall_pixel.x = draw->wall_x * WIDTH_TEXTURE;
 	if ((draw->side == WEST || draw->side == EAST) && cam->ray.x > 0)
 		draw->wall_pixel.x = WIDTH_TEXTURE - draw->wall_pixel.x - 1;
 	if ((draw->side == NORTH || draw->side == SOUTH) && cam->ray.y < 0)
