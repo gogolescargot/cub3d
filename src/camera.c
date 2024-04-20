@@ -6,11 +6,11 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 02:44:30 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/20 07:28:42 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 09:55:06 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d_bonus.h"
+#include "cub3d.h"
 
 void	camera_init(t_data *data, t_cam *cam)
 {

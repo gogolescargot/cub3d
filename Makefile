@@ -6,7 +6,7 @@
 #    By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/28 00:56:29 by ggalon            #+#    #+#              #
-#    Updated: 2024/04/20 09:49:38 by ggalon           ###   ########.fr        #
+#    Updated: 2024/04/20 09:54:46 by ggalon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ MLX_DIR		=	mlx/
 
 NAME_	=	cub3d
 
-NAME_B	=	cub3d_bonus
+NAME_B	=	cub3d
 
 LIBFT	=	$(LIBFT_DIR)libft.a
 
@@ -34,11 +34,11 @@ MLX		=	$(MLX_DIR)libmlx_Linux.a
 
 FILE_C	=	cub3d file map_1 map_2 map_3 camera window asset_1 asset_2 draw_1 draw_2 bool utils_1 utils_2
 
-FILE_CB	=	cub3d_bonus file_bonus map_1_bonus map_2_bonus map_3_bonus camera_bonus window_bonus asset_1_bonus asset_2_bonus draw_1_bonus draw_2_bonus bool_bonus utils_1_bonus utils_2_bonus
+FILE_CB	=	cub3d file map_1 map_2 map_3 camera window asset_1 asset_2 draw_1 draw_2 bool utils_1 utils_2
 
 FILE_H	=	cub3d
 
-FILE_HB	=	cub3d_bonus
+FILE_HB	=	cub3d
 
 SRCS	=	$(addsuffix .c, $(addprefix $(SRCS_DIR), $(FILE_C)))
 
