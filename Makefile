@@ -6,7 +6,7 @@
 #    By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/28 00:56:29 by ggalon            #+#    #+#              #
-#    Updated: 2024/04/18 04:08:49 by ggalon           ###   ########.fr        #
+#    Updated: 2024/04/20 09:49:38 by ggalon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,9 +24,9 @@ MLX_DIR		=	mlx/
 
 # FILES ========================================================================
 
-NAME	=	cub3d
+NAME_	=	cub3d
 
-NAME_B	=	
+NAME_B	=	cub3d_bonus
 
 LIBFT	=	$(LIBFT_DIR)libft.a
 
@@ -34,11 +34,11 @@ MLX		=	$(MLX_DIR)libmlx_Linux.a
 
 FILE_C	=	cub3d file map_1 map_2 map_3 camera window asset_1 asset_2 draw_1 draw_2 bool utils_1 utils_2
 
-FILE_CB	=	
+FILE_CB	=	cub3d_bonus file_bonus map_1_bonus map_2_bonus map_3_bonus camera_bonus window_bonus asset_1_bonus asset_2_bonus draw_1_bonus draw_2_bonus bool_bonus utils_1_bonus utils_2_bonus
 
 FILE_H	=	cub3d
 
-FILE_HB	=	
+FILE_HB	=	cub3d_bonus
 
 SRCS	=	$(addsuffix .c, $(addprefix $(SRCS_DIR), $(FILE_C)))
 
@@ -67,15 +67,15 @@ all:
 	@ $(MAKE) --no-print-directory -C $(LIBFT_DIR)
 	@ echo "\n${BBlue}Compilation of project source files...${NC}"
 	@ mkdir -p $(OBJS_DIR)
-	@ $(MAKE) --no-print-directory $(NAME)
+	@ $(MAKE) --no-print-directory $(NAME_)
 	@ echo "\n${BGreen}Project Ready !${NC}\n"
 
 bonus:
-	@$(MAKE) --no-print-directory NAME="$(NAME_B)" FILE_C="$(FILE_CB)" FILE_H="$(FILE_HB)"
+	@$(MAKE) --no-print-directory NAME_="$(NAME_B)" FILE_C="$(FILE_CB)" FILE_H="$(FILE_HB)"
 
-$(NAME): $(OBJS) $(LIBFT) $(MLX)
+$(NAME_): $(OBJS) $(LIBFT) $(MLX)
 	@ echo "\n${BCyan}Creating the executable...${NC}"
-	$(CC) $(CC_FLAGS) $(OBJS) $(LIBFT) $(MLX) $(MLX_FLAGS) -o $(NAME)
+	$(CC) $(CC_FLAGS) $(OBJS) $(LIBFT) $(MLX) $(MLX_FLAGS) -o $(NAME_)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c $(INCL) Makefile
 	$(CC) $(CC_FLAGS) -c $< -o $@
@@ -94,7 +94,7 @@ fclean:
 	@ $(MAKE) --no-print-directory -C $(LIBFT_DIR) fclean
 	@ echo "\n${BRed}Project deletion...${NC}"
 	rm -rf $(OBJS_DIR)
-	rm -f $(NAME) $(NAME_B)
+	rm -f $(NAME_) $(NAME_B)
 	@ echo
 
 re: fclean all

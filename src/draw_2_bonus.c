@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   draw_2.c                                           :+:      :+:    :+:   */
+/*   draw_2_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 04:00:44 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/19 09:54:35 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 09:46:20 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cub3d_bonus.h"
 
 void	draw_assset_bounds(t_draw *draw)
 {
@@ -65,7 +65,8 @@ void	draw_asset(t_mlx *mlx, t_img *img, t_draw *draw)
 			color = mlx->we.addr + padding;
 		else if (draw->side == EAST)
 			color = mlx->ea.addr + padding;
-		draw_pixel(img, draw->screen.x, draw->screen.y, *(int *)color);
+		if (draw->screen.x >= 110 || draw->screen.y >= 110)
+			draw_pixel(img, draw->screen.x, draw->screen.y, *(int *)color);
 		draw->screen.y++;
 	}
 }

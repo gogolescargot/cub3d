@@ -6,11 +6,11 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 03:57:18 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/18 03:58:11 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 07:28:42 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cub3d_bonus.h"
 
 int	map_lengh(t_list *lst)
 {

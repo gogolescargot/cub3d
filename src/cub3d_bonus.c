@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.c                                            :+:      :+:    :+:   */
+/*   cub3d_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/18 03:31:01 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 09:04:27 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cub3d_bonus.h"
 
 int	main(int argc, const char *argv[])
 {
@@ -58,7 +58,7 @@ void	move(t_data *data, t_cam *cam, int keycode)
 	move_dir.x = cam->dir.x * MOVE_SPEED;
 	move_dir.y = cam->dir.y * MOVE_SPEED;
 	move_point(cam, &tmp, &move_dir, keycode);
-	if (!is_outside(data, &tmp))
+	if (is_valid(data, &tmp))
 	{
 		cam->pos.x = tmp.x;
 		cam->pos.y = tmp.y;

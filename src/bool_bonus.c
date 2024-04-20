@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   bool.c                                             :+:      :+:    :+:   */
+/*   bool_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 03:07:17 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/18 03:07:29 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 09:15:00 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cub3d_bonus.h"
 
 bool	is_empty(char *str)
 {
@@ -50,11 +50,16 @@ bool	is_coord(t_data *data, char **str_map, int *i, int *j)
 	return (false);
 }
 
-bool	is_outside(t_data *data, t_point *point)
+bool	is_valid(t_data *data, t_point *point)
 {
 	if (point->x <= 1.01 || point->x >= data->lengh - 1.01)
-		return (true);
+		return (false);
 	if (point->y <= 1.01 || point->y >= data->height - 1.01)
-		return (true);
-	return (false);
+		return (false);
+	if (data->map[(int)(point->y + 0.01)][(int)(point->x + 0.01)] == '1' ||
+		data->map[(int)(point->y - 0.01)][(int)(point->x + 0.01)] == '1' ||
+		data->map[(int)(point->y + 0.01)][(int)(point->x - 0.01)] == '1' ||
+		data->map[(int)(point->y - 0.01)][(int)(point->x - 0.01)] == '1')
+		return (false);
+	return (true);
 }

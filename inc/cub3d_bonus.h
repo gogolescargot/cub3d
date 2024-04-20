@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   cub3d_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/19 09:41:28 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 09:05:21 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#ifndef CUB3D_BONUS_H
+# define CUB3D_BONUS_H
 
 # include "libft.h"
 # include "mlx.h"
@@ -178,6 +178,7 @@ void	asset_destroy(t_mlx *mlx);
 
 int		draw(t_data *data);
 void	draw_color(t_asset *asset, t_img *img);
+void	draw_map(t_data *data, t_img *img, t_cam *cam);
 void	draw_init(t_cam *cam, t_draw *draw);
 void	draw_dir(t_cam *cam, t_draw *draw);
 void	draw_dda(t_data *data, t_draw *draw);
@@ -189,7 +190,7 @@ void	draw_pixel(t_img *img, int x, int y, unsigned int color);
 bool	is_empty(char *str);
 bool	is_border(t_data *data, int i, int j);
 bool	is_coord(t_data *data, char **str_map, int *i, int *j);
-bool	is_outside(t_data *data, t_point *point);
+bool	is_valid(t_data *data, t_point *point);
 
 void	free_data(t_data *data);
 void	move_point(t_cam *cam, t_point *tmp, t_vector *move_dir, int keycode);

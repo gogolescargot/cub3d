@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   draw_1.c                                           :+:      :+:    :+:   */
+/*   draw_1_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/20 07:23:46 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 09:17:42 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cub3d_bonus.h"
 
 int	draw(t_data *data)
 {
@@ -24,7 +24,7 @@ int	draw(t_data *data)
 	img = &mlx->img;
 	draw.screen.x = 0;
 	draw_color(data->asset, img);
-	draw_map(data, data->asset, img);
+	draw_map(data, img, cam);
 	while (draw.screen.x < WIDTH)
 	{
 		draw_init(cam, &draw);
@@ -63,33 +63,49 @@ void	draw_color(t_asset *asset, t_img *img)
 	}
 }
 
-void	draw_map(t_data *data, t_asset *asset, t_mlx *mlx, t_cam *cam)
+void	draw_square(t_img *img, int x, int y, int color)
+{
+	t_coord	pixel;
+
+	pixel.x = 0;
+	pixel.y = 0;
+	while (pixel.y < 10)
+	{
+		while (pixel.x < 10)
+		{
+			draw_pixel(img, x + pixel.x, y + pixel.y, color);
+			pixel.x++;
+		}
+		pixel.x = 0;
+		pixel.y++;
+	}
+}
+
+void	draw_map(t_data *data, t_img *img, t_cam *cam)
 {
 	t_coord	coord;
-	t_coord start;
 	t_coord	screen;
 
-	coord.x = cam->pos.x;
-	coord.y = cam->pos.y;
-
-	coord.x -= 10;
-	coord.y -= 10;
-	start.x = coord.x;
-	start.y = coord.y;
+	coord.x = (int)(cam->pos.x) - 5;
+	coord.y = (int)(cam->pos.y) - 5;
 	screen.x = 0;
 	screen.y = 0;
-	while (coord.y < start.y + 20)
+	while (screen.y < 11)
 	{
-		while (coord.x < start.x + 20)
+		while (screen.x < 11)
 		{
-			if (coord.x >= 0 || coord.x <= data->lengh - 1)
-			{
-				mlx_put_image_to_window(mlx->ptr, mlx->win, mlx->no.ptr, screen.x * 10, screen.y * 10);
-			}
+			if (screen.x == 5 && screen.y == 5)
+				draw_square(img, screen.x * 10, screen.y * 10, 0xFF0000);
+			else if ((coord.x >= 0 && coord.x <= data->lengh - 1)
+				&& (coord.y >= 0 && coord.y <= data->height - 1)
+				&& data->map[coord.y][coord.x] == '1')
+				draw_square(img, screen.x * 10, screen.y * 10, 0xFFFFFF);
+			else
+				draw_square(img, screen.x * 10, screen.y * 10, 0x000000);
 			coord.x++;
 			screen.x++;
 		}
-		coord.x -= 20;
+		coord.x -= 11;
 		coord.y++;
 		screen.x = 0;
 		screen.y++;
