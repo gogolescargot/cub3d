@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/20 07:22:48 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/20 07:23:46 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int	draw(t_data *data)
 	img = &mlx->img;
 	draw.screen.x = 0;
 	draw_color(data->asset, img);
+	draw_map(data, data->asset, img);
 	while (draw.screen.x < WIDTH)
 	{
 		draw_init(cam, &draw);
@@ -59,6 +60,39 @@ void	draw_color(t_asset *asset, t_img *img)
 		}
 		y++;
 		x = 0;
+	}
+}
+
+void	draw_map(t_data *data, t_asset *asset, t_mlx *mlx, t_cam *cam)
+{
+	t_coord	coord;
+	t_coord start;
+	t_coord	screen;
+
+	coord.x = cam->pos.x;
+	coord.y = cam->pos.y;
+
+	coord.x -= 10;
+	coord.y -= 10;
+	start.x = coord.x;
+	start.y = coord.y;
+	screen.x = 0;
+	screen.y = 0;
+	while (coord.y < start.y + 20)
+	{
+		while (coord.x < start.x + 20)
+		{
+			if (coord.x >= 0 || coord.x <= data->lengh - 1)
+			{
+				mlx_put_image_to_window(mlx->ptr, mlx->win, mlx->no.ptr, screen.x * 10, screen.y * 10);
+			}
+			coord.x++;
+			screen.x++;
+		}
+		coord.x -= 20;
+		coord.y++;
+		screen.x = 0;
+		screen.y++;
 	}
 }
 
