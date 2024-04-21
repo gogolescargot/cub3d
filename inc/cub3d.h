@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/20 09:54:31 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/21 21:21:52 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,8 @@ typedef struct s_data
 
 int		keypress(int keycode, t_data *data);
 void	move(t_data *data, t_cam *cam, int keycode);
-void	rotate(t_cam *cam, int keycode);
+void	rotate(t_cam *cam, int keycode, double rotate_speed);
+int		mouse(t_data *data);
 int		destroy(t_data *data, int error_code);
 
 void	struct_init(t_data *data, t_asset *asset, t_mlx	*mlx, t_cam *cam);

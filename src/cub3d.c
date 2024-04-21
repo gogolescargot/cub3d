@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/20 09:55:06 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/21 21:21:43 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int	main(int argc, const char *argv[])
 		return (1);
 	if (asset_init(&data, &asset, &mlx))
 		return (1);
+	// mlx_loop_hook(mlx.ptr, &mouse, &data);
 	mlx_loop_hook(mlx.ptr, &draw, &data);
 	mlx_loop(mlx.ptr);
 	destroy(&data, 0);
@@ -46,7 +47,7 @@ int	keypress(int keycode, t_data *data)
 	else if (keycode == W || keycode == A || keycode == S || keycode == D)
 		move(data, data->cam, keycode);
 	else if (keycode == L_ARR || keycode == R_ARR)
-		rotate(data->cam, keycode);
+		rotate(data->cam, keycode, ROTATE_SPEED);
 	return (0);
 }
 
@@ -65,13 +66,11 @@ void	move(t_data *data, t_cam *cam, int keycode)
 	}
 }
 
-void	rotate(t_cam *cam, int keycode)
+void	rotate(t_cam *cam, int keycode, double rotate_speed)
 {
-	double	rotate_speed;
 	double	old_plane_x;
 	double	old_dir_x;
 
-	rotate_speed = ROTATE_SPEED;
 	if (keycode == L_ARR)
 		rotate_speed *= -1;
 	old_dir_x = cam->dir.x;
@@ -84,6 +83,21 @@ void	rotate(t_cam *cam, int keycode)
 		- cam->plane.y * sin(rotate_speed);
 	cam->plane.y = old_plane_x * sin(rotate_speed)
 		+ cam->plane.y * cos(rotate_speed);
+}
+
+int	mouse(t_data *data)
+{
+	t_coord	mouse;
+	t_mlx	*mlx;
+
+	mlx = data->mlx;
+	mlx_mouse_get_pos(mlx->ptr, mlx->win, &mouse.x, &mouse.y);
+	if (mouse.x > WIDTH)
+		rotate(data->cam, R_ARR, mouse.x * 2.0 / WIDTH - 1);
+	else if (mouse.x < WIDTH)
+		rotate(data->cam, L_ARR, mouse.x * -2.0 / WIDTH - 1);
+	mlx_mouse_move(mlx->ptr, mlx->win, WIDTH / 2, HEIGHT / 2);
+	return (0);
 }
 
 int	destroy(t_data *data, int error_code)
