@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/21 21:21:52 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 18:37:22 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # define A 97
 # define S 115
 # define D 100
+# define E 101
 # define L_ARR 65361
 # define R_ARR 65363
 
@@ -34,6 +35,8 @@
 # define SOUTH 1
 # define WEST 2
 # define EAST 3
+# define DOOR_X 4
+# define DOOR_Y 5
 
 # define WIDTH 800
 # define HEIGHT 600
@@ -72,7 +75,6 @@ typedef struct s_draw
 	t_coord	wall_pixel;
 	t_coord	screen;
 	t_coord	map;
-
 	double	perp_wall_dist;
 	int		side;
 	int		line_height;
@@ -87,6 +89,8 @@ typedef struct s_cam
 	t_vector	dir;
 	t_vector	plane;
 	t_vector	ray;
+	t_coord		door;
+	bool		door_crossed;
 	double		camera_x;
 }	t_cam;
 
@@ -104,6 +108,7 @@ typedef struct s_mlx
 	void	*ptr;
 	void	*win;
 	t_img	img;
+	t_img	door;
 	t_img	no;
 	t_img	so;
 	t_img	we;
@@ -134,8 +139,10 @@ typedef struct s_data
 int		keypress(int keycode, t_data *data);
 void	move(t_data *data, t_cam *cam, int keycode);
 void	rotate(t_cam *cam, int keycode, double rotate_speed);
-int		mouse(t_data *data);
 int		destroy(t_data *data, int error_code);
+
+int		mouse(t_mlx *mlx, t_cam *cam);
+int		loop(t_data *data);
 
 void	struct_init(t_data *data, t_asset *asset, t_mlx	*mlx, t_cam *cam);
 int		type_init(char ***type);
@@ -190,6 +197,7 @@ void	draw_pixel(t_img *img, int x, int y, unsigned int color);
 
 bool	is_empty(char *str);
 bool	is_border(t_data *data, int i, int j);
+bool	is_outside(t_data *data, int x, int y);
 bool	is_coord(t_data *data, char **str_map, int *i, int *j);
 bool	is_valid(t_data *data, t_point *point);
 

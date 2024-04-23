@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 03:58:56 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/20 09:55:06 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 16:29:00 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	map_check_char(t_data *data)
 	{
 		while (data->map[i][j])
 		{
-			if (!ft_strchr("01NSWE ", data->map[i][j]))
+			if (!ft_strchr("01NSWEOC ", data->map[i][j]))
 			{
 				error("Forbidden character");
 				free_data(data);

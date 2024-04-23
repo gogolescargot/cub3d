@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 04:00:44 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/20 09:55:06 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 18:39:44 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	draw_assset_bounds(t_draw *draw)
 {
-	if (draw->side == EAST || draw->side == WEST)
+	if (draw->side == EAST || draw->side == WEST || draw->side == DOOR_X)
 		draw->perp_wall_dist = draw->dist.x - draw->delta_dist.x;
 	else
 		draw->perp_wall_dist = draw->dist.y - draw->delta_dist.y;
@@ -29,15 +29,15 @@ void	draw_assset_bounds(t_draw *draw)
 
 void	draw_assset_pixel(t_cam *cam, t_draw *draw)
 {
-	if (draw->side == WEST || draw->side == EAST)
+	if (draw->side == WEST || draw->side == EAST || draw->side == DOOR_X)
 		draw->wall_x = cam->pos.y + draw->perp_wall_dist * cam->ray.y;
 	else
 		draw->wall_x = cam->pos.x + draw->perp_wall_dist * cam->ray.x;
 	draw->wall_x -= floor(draw->wall_x);
 	draw->wall_pixel.x = draw->wall_x * WIDTH_TEXTURE;
-	if ((draw->side == WEST || draw->side == EAST) && cam->ray.x > 0)
+	if ((draw->side == WEST || draw->side == EAST || draw->side == DOOR_X) && cam->ray.x > 0)
 		draw->wall_pixel.x = WIDTH_TEXTURE - draw->wall_pixel.x - 1;
-	if ((draw->side == NORTH || draw->side == SOUTH) && cam->ray.y < 0)
+	if ((draw->side == NORTH || draw->side == SOUTH || draw->side == DOOR_Y) && cam->ray.y < 0)
 		draw->wall_pixel.x = WIDTH_TEXTURE - draw->wall_pixel.x - 1;
 }
 
@@ -65,6 +65,8 @@ void	draw_asset(t_mlx *mlx, t_img *img, t_draw *draw)
 			color = mlx->we.addr + padding;
 		else if (draw->side == EAST)
 			color = mlx->ea.addr + padding;
+		else if (draw->side == DOOR_X || draw->side == DOOR_Y)
+			color = mlx->door.addr + padding;
 		if (draw->screen.x >= 110 || draw->screen.y >= 110)
 			draw_pixel(img, draw->screen.x, draw->screen.y, *(int *)color);
 		draw->screen.y++;

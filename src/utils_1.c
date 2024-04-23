@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 02:13:39 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/20 09:55:06 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 18:16:20 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,10 @@ void	struct_init(t_data *data, t_asset *asset, t_mlx	*mlx, t_cam *cam)
 	mlx->so.ptr = NULL;
 	mlx->we.ptr = NULL;
 	mlx->ea.ptr = NULL;
+	mlx->door.ptr = NULL;
+	cam->door.x = -1;
+	cam->door.y = -1;
+	cam->door_crossed = false;
 }
 
 int	args_check(int argc, const char **argv)

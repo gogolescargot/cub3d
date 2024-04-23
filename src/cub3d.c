@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/21 21:21:43 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 18:13:00 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,21 @@ int	main(int argc, const char *argv[])
 		return (1);
 	if (asset_init(&data, &asset, &mlx))
 		return (1);
-	// mlx_loop_hook(mlx.ptr, &mouse, &data);
-	mlx_loop_hook(mlx.ptr, &draw, &data);
+	mlx_loop_hook(mlx.ptr, &loop, &data);
 	mlx_loop(mlx.ptr);
 	destroy(&data, 0);
 	return (0);
+}
+
+void	door(t_data *data, t_cam *cam)
+{
+	if (cam->door.x != -1 && cam->door.y != -1)
+	{
+		if (data->map[cam->door.y][cam->door.x] == 'C')
+			data->map[cam->door.y][cam->door.x] = 'O';
+		else
+			data->map[cam->door.y][cam->door.x] = 'C';
+	}
 }
 
 int	keypress(int keycode, t_data *data)
@@ -46,6 +56,8 @@ int	keypress(int keycode, t_data *data)
 		destroy(data, 0);
 	else if (keycode == W || keycode == A || keycode == S || keycode == D)
 		move(data, data->cam, keycode);
+	else if (keycode == E)
+		door(data, data->cam);
 	else if (keycode == L_ARR || keycode == R_ARR)
 		rotate(data->cam, keycode, ROTATE_SPEED);
 	return (0);
@@ -85,18 +97,22 @@ void	rotate(t_cam *cam, int keycode, double rotate_speed)
 		+ cam->plane.y * cos(rotate_speed);
 }
 
-int	mouse(t_data *data)
+int	loop(t_data *data)
+{
+	mouse(data->mlx, data->cam);
+	draw(data);
+	return (0);
+}
+
+int	mouse(t_mlx *mlx, t_cam *cam)
 {
 	t_coord	mouse;
-	t_mlx	*mlx;
-
-	mlx = data->mlx;
+	
 	mlx_mouse_get_pos(mlx->ptr, mlx->win, &mouse.x, &mouse.y);
-	if (mouse.x > WIDTH)
-		rotate(data->cam, R_ARR, mouse.x * 2.0 / WIDTH - 1);
-	else if (mouse.x < WIDTH)
-		rotate(data->cam, L_ARR, mouse.x * -2.0 / WIDTH - 1);
-	mlx_mouse_move(mlx->ptr, mlx->win, WIDTH / 2, HEIGHT / 2);
+	if (mouse.x > WIDTH / 2 + WIDTH / 4)
+		rotate(cam, R_ARR, ROTATE_SPEED / 5);
+	else if (mouse.x < WIDTH / 2 - WIDTH / 4)
+		rotate(cam, L_ARR, ROTATE_SPEED / 5);
 	return (0);
 }
 

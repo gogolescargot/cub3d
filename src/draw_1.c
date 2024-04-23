@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/21 21:15:12 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 19:01:28 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,11 +95,19 @@ void	draw_map(t_data *data, t_img *img, t_cam *cam)
 		while (screen.x < 11)
 		{
 			if (screen.x == 5 && screen.y == 5)
-				draw_square(img, screen.x * 10, screen.y * 10, 0xFF0000);
+				draw_square(img, screen.x * 10, screen.y * 10, 0x0000FF);
 			else if ((coord.x >= 0 && coord.x <= data->lengh - 1)
-				&& (coord.y >= 0 && coord.y <= data->height - 1)
-				&& data->map[coord.y][coord.x] == '1')
-				draw_square(img, screen.x * 10, screen.y * 10, 0xFFFFFF);
+				&& (coord.y >= 0 && coord.y <= data->height - 1))
+			{
+				if (data->map[coord.y][coord.x] == '1')
+					draw_square(img, screen.x * 10, screen.y * 10, 0xFFFFFF);
+				else if (data->map[coord.y][coord.x] == 'O')
+					draw_square(img, screen.x * 10, screen.y * 10, 0x00FF00);
+				else if (data->map[coord.y][coord.x] == 'C')
+					draw_square(img, screen.x * 10, screen.y * 10, 0xFF0000);
+				else
+					draw_square(img, screen.x * 10, screen.y * 10, 0x000000);
+			}
 			else
 				draw_square(img, screen.x * 10, screen.y * 10, 0x000000);
 			coord.x++;
@@ -147,6 +155,31 @@ void	draw_dir(t_cam *cam, t_draw *draw)
 	}
 }
 
+bool	is_door(t_cam *cam, int x, int y)
+{
+	if ((int)cam->pos.x - x <= 1 && (int)cam->pos.x - x >= -1
+		&& (int)cam->pos.y - y <= 1 && (int)cam->pos.y - y >= -1)
+		return (true);
+	return (false);
+}
+
+void	door_check(t_data *data, t_draw *draw, t_cam *cam)
+{
+	if (draw->screen.x != WIDTH / 2)
+		return ;
+	if (ft_strchr("OC", data->map[draw->map.y][draw->map.x]) && is_door(cam, draw->map.x, draw->map.y))
+	{
+		cam->door_crossed = true;
+		cam->door.x = draw->map.x;
+		cam->door.y = draw->map.y;
+	}
+	else if (!cam->door_crossed)
+	{
+		cam->door.x = -1;
+		cam->door.y = -1;
+	}
+}
+
 void	draw_dda(t_data *data, t_draw *draw)
 {
 	while (true)
@@ -155,7 +188,9 @@ void	draw_dda(t_data *data, t_draw *draw)
 		{
 			draw->dist.x += draw->delta_dist.x;
 			draw->map.x += draw->step_dir.x;
-			if (draw->step_dir.x == 1)
+			if (data->map[draw->map.y][draw->map.x] == 'C')
+				draw->side = DOOR_X;
+			else if (draw->step_dir.x == 1)
 				draw->side = WEST;
 			else
 				draw->side = EAST;
@@ -164,14 +199,20 @@ void	draw_dda(t_data *data, t_draw *draw)
 		{
 			draw->dist.y += draw->delta_dist.y;
 			draw->map.y += draw->step_dir.y;
-			if (draw->step_dir.y == 1)
+			if (data->map[draw->map.y][draw->map.x] == 'C')
+				draw->side = DOOR_Y;
+			else if (draw->step_dir.y == 1)
 				draw->side = NORTH;
 			else
 				draw->side = SOUTH;
 		}
-		if (draw->map.y < 0 || draw->map.y > data->height - 1
-			|| draw->map.x < 0 || draw->map.x > data->lengh - 1
-			|| data->map[draw->map.y][draw->map.x] == '1')
+		door_check(data, draw, data->cam);
+		if (is_outside(data, draw->map.x, draw->map.y)
+			|| ft_strchr("1C", data->map[draw->map.y][draw->map.x]))
 			break ;
+		
+		else if (data->map[draw->map.y][draw->map.x] == 'C')
+			draw->side = DOOR_Y;
 	}
+	data->cam->door_crossed = false;
 }
