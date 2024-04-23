@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/23 18:13:00 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 19:20:24 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ int	loop(t_data *data)
 int	mouse(t_mlx *mlx, t_cam *cam)
 {
 	t_coord	mouse;
-	
+
 	mlx_mouse_get_pos(mlx->ptr, mlx->win, &mouse.x, &mouse.y);
 	if (mouse.x > WIDTH / 2 + WIDTH / 4)
 		rotate(cam, R_ARR, ROTATE_SPEED / 5);

@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 03:07:17 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/23 16:37:54 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 19:20:00 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ bool	is_valid(t_data *data, t_point *point)
 		return (false);
 	if (point->y <= 1.01 || point->y >= data->height - 1.01)
 		return (false);
-	
 	if (ft_strchr("1C", data->map[(int)(point->y + 0.01)][(int)(point->x + 0.01)]) ||
 		ft_strchr("1C", data->map[(int)(point->y - 0.01)][(int)(point->x + 0.01)]) ||
 		ft_strchr("1C", data->map[(int)(point->y + 0.01)][(int)(point->x - 0.01)]) ||

@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/23 19:01:28 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/23 19:20:37 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,6 @@ void	draw_dda(t_data *data, t_draw *draw)
 		if (is_outside(data, draw->map.x, draw->map.y)
 			|| ft_strchr("1C", data->map[draw->map.y][draw->map.x]))
 			break ;
-		
 		else if (data->map[draw->map.y][draw->map.x] == 'C')
 			draw->side = DOOR_Y;
 	}
