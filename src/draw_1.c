@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/23 19:20:37 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/24 15:34:27 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ int	draw(t_data *data)
 	img = &mlx->img;
 	draw.screen.x = 0;
 	draw_color(data->asset, img);
-	draw_map(data, img, cam);
 	while (draw.screen.x < WIDTH)
 	{
 		draw_init(cam, &draw);
@@ -35,6 +34,8 @@ int	draw(t_data *data)
 		draw_asset(mlx, img, &draw);
 		draw.screen.x++;
 	}
+	draw_map(data, img, cam);
+	// draw_gun();
 	mlx_put_image_to_window(mlx->ptr, mlx->win, img->ptr, 0, 0);
 	return (0);
 }
@@ -165,9 +166,16 @@ bool	is_door(t_cam *cam, int x, int y)
 
 void	door_check(t_data *data, t_draw *draw, t_cam *cam)
 {
+	if (!is_outside(data, draw->map.x, draw->map.y) && ft_strchr("OC", data->map[draw->map.y][draw->map.x]))
+	{
+		if (draw->side == WEST || draw->side == EAST)
+			draw->side = DOOR_X;
+		else
+			draw->side = DOOR_Y;
+	}
 	if (draw->screen.x != WIDTH / 2)
 		return ;
-	if (ft_strchr("OC", data->map[draw->map.y][draw->map.x]) && is_door(cam, draw->map.x, draw->map.y))
+	if (!is_outside(data, draw->map.x, draw->map.y) && ft_strchr("OC", data->map[draw->map.y][draw->map.x]) && is_door(cam, draw->map.x, draw->map.y))
 	{
 		cam->door_crossed = true;
 		cam->door.x = draw->map.x;
@@ -188,9 +196,7 @@ void	draw_dda(t_data *data, t_draw *draw)
 		{
 			draw->dist.x += draw->delta_dist.x;
 			draw->map.x += draw->step_dir.x;
-			if (data->map[draw->map.y][draw->map.x] == 'C')
-				draw->side = DOOR_X;
-			else if (draw->step_dir.x == 1)
+			if (draw->step_dir.x == 1)
 				draw->side = WEST;
 			else
 				draw->side = EAST;
@@ -199,9 +205,7 @@ void	draw_dda(t_data *data, t_draw *draw)
 		{
 			draw->dist.y += draw->delta_dist.y;
 			draw->map.y += draw->step_dir.y;
-			if (data->map[draw->map.y][draw->map.x] == 'C')
-				draw->side = DOOR_Y;
-			else if (draw->step_dir.y == 1)
+			if (draw->step_dir.y == 1)
 				draw->side = NORTH;
 			else
 				draw->side = SOUTH;
@@ -210,8 +214,6 @@ void	draw_dda(t_data *data, t_draw *draw)
 		if (is_outside(data, draw->map.x, draw->map.y)
 			|| ft_strchr("1C", data->map[draw->map.y][draw->map.x]))
 			break ;
-		else if (data->map[draw->map.y][draw->map.x] == 'C')
-			draw->side = DOOR_Y;
 	}
 	data->cam->door_crossed = false;
 }

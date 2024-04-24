@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 04:00:44 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/23 18:39:44 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/24 15:46:30 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ void	draw_assset_pixel(t_cam *cam, t_draw *draw)
 	else
 		draw->wall_x = cam->pos.x + draw->perp_wall_dist * cam->ray.x;
 	draw->wall_x -= floor(draw->wall_x);
-	draw->wall_pixel.x = draw->wall_x * WIDTH_TEXTURE;
+	draw->wall_pixel.x = draw->wall_x * WIDTH_WALL;
 	if ((draw->side == WEST || draw->side == EAST || draw->side == DOOR_X) && cam->ray.x > 0)
-		draw->wall_pixel.x = WIDTH_TEXTURE - draw->wall_pixel.x - 1;
+		draw->wall_pixel.x = WIDTH_WALL - draw->wall_pixel.x - 1;
 	if ((draw->side == NORTH || draw->side == SOUTH || draw->side == DOOR_Y) && cam->ray.y < 0)
-		draw->wall_pixel.x = WIDTH_TEXTURE - draw->wall_pixel.x - 1;
+		draw->wall_pixel.x = WIDTH_WALL - draw->wall_pixel.x - 1;
 }
 
 void	draw_asset(t_mlx *mlx, t_img *img, t_draw *draw)
@@ -48,7 +48,7 @@ void	draw_asset(t_mlx *mlx, t_img *img, t_draw *draw)
 	char	*color;
 	int		padding;
 
-	step = 1.0 * HEIGHT_TEXTURE / draw->line_height;
+	step = 1.0 * HEIGHT_WALL / draw->line_height;
 	tex_pos = (draw->draw_start - HEIGHT / 2 + draw->line_height / 2) * step;
 	draw->screen.y = draw->draw_start;
 	while (draw->screen.y < draw->draw_end)
@@ -67,8 +67,7 @@ void	draw_asset(t_mlx *mlx, t_img *img, t_draw *draw)
 			color = mlx->ea.addr + padding;
 		else if (draw->side == DOOR_X || draw->side == DOOR_Y)
 			color = mlx->door.addr + padding;
-		if (draw->screen.x >= 110 || draw->screen.y >= 110)
-			draw_pixel(img, draw->screen.x, draw->screen.y, *(int *)color);
+		draw_pixel(img, draw->screen.x, draw->screen.y, *(int *)color);
 		draw->screen.y++;
 	}
 }

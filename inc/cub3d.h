@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/23 19:20:58 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/24 15:46:41 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,11 @@
 # define WIDTH 800
 # define HEIGHT 600
 
-# define WIDTH_TEXTURE 450
-# define HEIGHT_TEXTURE 450
+# define WIDTH_WALL 450
+# define HEIGHT_WALL 450
+
+# define WIDTH_GUN 128
+# define HEIGHT_GUN 128
 
 # define PI 3.14159265359
 
@@ -109,6 +112,11 @@ typedef struct s_mlx
 	void	*win;
 	t_img	img;
 	t_img	door;
+	t_img	gun_0;
+	t_img	gun_1;
+	t_img	gun_2;
+	t_img	gun_3;
+	t_img	gun_4;
 	t_img	no;
 	t_img	so;
 	t_img	we;

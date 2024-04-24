@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 02:13:39 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/23 18:16:20 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/24 15:44:13 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,11 @@ void	struct_init(t_data *data, t_asset *asset, t_mlx	*mlx, t_cam *cam)
 	mlx->we.ptr = NULL;
 	mlx->ea.ptr = NULL;
 	mlx->door.ptr = NULL;
+	mlx->gun_0.ptr = NULL;
+	mlx->gun_1.ptr = NULL;
+	mlx->gun_2.ptr = NULL;
+	mlx->gun_3.ptr = NULL;
+	mlx->gun_4.ptr = NULL;
 	cam->door.x = -1;
 	cam->door.y = -1;
 	cam->door_crossed = false;
