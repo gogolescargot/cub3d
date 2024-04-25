@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/24 15:46:41 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/25 20:12:54 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # define E 101
 # define L_ARR 65361
 # define R_ARR 65363
+# define LEFT_CLICK 1
 
 # define NORTH 0
 # define SOUTH 1
@@ -86,6 +87,15 @@ typedef struct s_draw
 	double	wall_x;
 }	t_draw;
 
+typedef struct s_img
+{
+	void	*ptr;
+	char	*addr;
+	int		bpp;
+	int		size_line;
+	int		endian;
+}	t_img;
+
 typedef struct s_cam
 {
 	t_point		pos;
@@ -95,16 +105,8 @@ typedef struct s_cam
 	t_coord		door;
 	bool		door_crossed;
 	double		camera_x;
+	bool		shot;
 }	t_cam;
-
-typedef struct s_img
-{
-	void	*ptr;
-	char	*addr;
-	int		bpp;
-	int		size_line;
-	int		endian;
-}	t_img;
 
 typedef struct s_mlx
 {
@@ -145,6 +147,7 @@ typedef struct s_data
 }	t_data;
 
 int		keypress(int keycode, t_data *data);
+int		mousepress(int keycode, int x, int y, t_data *data);
 void	move(t_data *data, t_cam *cam, int keycode);
 void	rotate(t_cam *cam, int keycode, double rotate_speed);
 int		destroy(t_data *data, int error_code);
@@ -195,6 +198,8 @@ void	asset_destroy(t_mlx *mlx);
 int		draw(t_data *data);
 void	draw_color(t_asset *asset, t_img *img);
 void	draw_map(t_data *data, t_img *img, t_cam *cam);
+void	draw_gun(t_mlx *mlx, t_img *img, t_cam *cam);
+void	draw_shot(t_cam *cam);
 void	draw_init(t_cam *cam, t_draw *draw);
 void	draw_dir(t_cam *cam, t_draw *draw);
 void	draw_dda(t_data *data, t_draw *draw);

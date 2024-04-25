@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/23 19:20:24 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/25 20:13:02 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,15 @@ int	keypress(int keycode, t_data *data)
 	return (0);
 }
 
+int	mousepress(int keycode, int x, int y, t_data *data)
+{
+	(void)x;
+	(void)y;
+	if (keycode == LEFT_CLICK)
+		draw_shot(data->cam);
+	return (0);
+}
+
 void	move(t_data *data, t_cam *cam, int keycode)
 {
 	t_vector	move_dir;
@@ -101,6 +110,7 @@ int	loop(t_data *data)
 {
 	mouse(data->mlx, data->cam);
 	draw(data);
+	usleep(10000);
 	return (0);
 }
 

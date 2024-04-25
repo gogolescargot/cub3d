@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/24 15:34:27 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/25 20:16:08 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	draw(t_data *data)
 		draw.screen.x++;
 	}
 	draw_map(data, img, cam);
-	// draw_gun();
+	draw_gun(mlx, img, cam);
 	mlx_put_image_to_window(mlx->ptr, mlx->win, img->ptr, 0, 0);
 	return (0);
 }
@@ -118,6 +118,74 @@ void	draw_map(t_data *data, t_img *img, t_cam *cam)
 		coord.y++;
 		screen.x = 0;
 		screen.y++;
+	}
+}
+
+void	draw_shot(t_cam *cam)
+{
+	cam->shot = true;
+}
+
+void	draw_gun_utils(t_img *img, t_img *gun, t_coord pixel)
+{
+	t_coord			multp;
+	unsigned int	color;
+
+	multp.x = 0;
+	multp.y = 0;
+	color = *(int *)(gun->addr + pixel.y * gun->size_line + pixel.x * (gun->bpp / 8));
+	if (color != 0xFF000000)
+	{
+		while (multp.y < 2)
+		{
+			while (multp.x < 2)
+			{
+				draw_pixel(img, (pixel.x * 2 + multp.x) + WIDTH / 2, (pixel.y * 2 + multp.y) + HEIGHT - HEIGHT_GUN * 2, color);
+				multp.x++;
+			}
+			multp.y++;
+			multp.x = 0;
+		}
+	}
+}
+
+void	draw_gun(t_mlx *mlx, t_img *img, t_cam *cam)
+{
+	t_coord		pixel;
+	t_img		*gun;
+	static int	i;
+
+	pixel.x = 0;
+	pixel.y = 0;
+	if (cam->shot)
+	{
+		if (i == 0)
+			gun = &mlx->gun_1;
+		else if (i == 1)
+			gun = &mlx->gun_2;
+		else if (i == 2)
+			gun = &mlx->gun_3;
+		else if (i == 3)
+			gun = &mlx->gun_4;
+		else if (i == 4)
+		{
+			gun = &mlx->gun_0;
+			cam->shot = false;
+			i = -1;
+		}
+		i++;
+	}
+	else
+		gun = &mlx->gun_0;
+	while (pixel.y < HEIGHT_GUN)
+	{
+		while (pixel.x < WIDTH_GUN)
+		{
+			draw_gun_utils(img, gun, pixel);
+			pixel.x++;
+		}
+		pixel.y++;
+		pixel.x = 0;
 	}
 }
 

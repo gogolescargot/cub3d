@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 02:45:59 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/22 00:07:36 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/25 19:38:10 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int	window_init(t_data *data, t_mlx *mlx)
 	if (image_init(data, mlx))
 		return (1);
 	mlx_hook(mlx->win, KeyPress, KeyPressMask, &keypress, data);
+	mlx_hook(mlx->win, ButtonPress, ButtonPressMask, &mousepress, data);
 	mlx_hook(mlx->win, DestroyNotify, StructureNotifyMask, &destroy, data);
 	return (0);
 }

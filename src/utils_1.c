@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 02:13:39 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/24 15:44:13 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/25 20:06:41 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	struct_init(t_data *data, t_asset *asset, t_mlx	*mlx, t_cam *cam)
 	cam->door.x = -1;
 	cam->door.y = -1;
 	cam->door_crossed = false;
+	cam->shot = false;
 }
 
 int	args_check(int argc, const char **argv)
