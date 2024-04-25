@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/25 20:13:02 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 00:17:15 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,39 +36,6 @@ int	main(int argc, const char *argv[])
 	mlx_loop_hook(mlx.ptr, &loop, &data);
 	mlx_loop(mlx.ptr);
 	destroy(&data, 0);
-	return (0);
-}
-
-void	door(t_data *data, t_cam *cam)
-{
-	if (cam->door.x != -1 && cam->door.y != -1)
-	{
-		if (data->map[cam->door.y][cam->door.x] == 'C')
-			data->map[cam->door.y][cam->door.x] = 'O';
-		else
-			data->map[cam->door.y][cam->door.x] = 'C';
-	}
-}
-
-int	keypress(int keycode, t_data *data)
-{
-	if (keycode == ESC)
-		destroy(data, 0);
-	else if (keycode == W || keycode == A || keycode == S || keycode == D)
-		move(data, data->cam, keycode);
-	else if (keycode == E)
-		door(data, data->cam);
-	else if (keycode == L_ARR || keycode == R_ARR)
-		rotate(data->cam, keycode, ROTATE_SPEED);
-	return (0);
-}
-
-int	mousepress(int keycode, int x, int y, t_data *data)
-{
-	(void)x;
-	(void)y;
-	if (keycode == LEFT_CLICK)
-		draw_shot(data->cam);
 	return (0);
 }
 
@@ -110,19 +77,6 @@ int	loop(t_data *data)
 {
 	mouse(data->mlx, data->cam);
 	draw(data);
-	usleep(10000);
-	return (0);
-}
-
-int	mouse(t_mlx *mlx, t_cam *cam)
-{
-	t_coord	mouse;
-
-	mlx_mouse_get_pos(mlx->ptr, mlx->win, &mouse.x, &mouse.y);
-	if (mouse.x > WIDTH / 2 + WIDTH / 4)
-		rotate(cam, R_ARR, ROTATE_SPEED / 5);
-	else if (mouse.x < WIDTH / 2 - WIDTH / 4)
-		rotate(cam, L_ARR, ROTATE_SPEED / 5);
 	return (0);
 }
 

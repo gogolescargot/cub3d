@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/25 20:12:54 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 00:26:15 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,7 @@ int		window_init(t_data *data, t_mlx *mlx);
 int		image_init(t_data *data, t_mlx *mlx);
 
 int		asset_init(t_data *data, t_asset *asset, t_mlx *mlx);
+void	asset_init_address(t_mlx *mlx);
 int		asset_check(t_asset *asset);
 int		asset_open(char *filepath);
 int		asset_insert(t_asset *asset, char *info, int i);
@@ -198,24 +199,31 @@ void	asset_destroy(t_mlx *mlx);
 int		draw(t_data *data);
 void	draw_color(t_asset *asset, t_img *img);
 void	draw_map(t_data *data, t_img *img, t_cam *cam);
+void	draw_map_select(t_data *data, t_img *img, t_coord scrn, t_coord coord);
 void	draw_gun(t_mlx *mlx, t_img *img, t_cam *cam);
-void	draw_shot(t_cam *cam);
+void	draw_gun_select(t_mlx *mlx, t_cam *cam, t_img **gun);
+void	draw_gun_utils(t_img *img, t_img *gun, t_coord pixel);
 void	draw_init(t_cam *cam, t_draw *draw);
 void	draw_dir(t_cam *cam, t_draw *draw);
 void	draw_dda(t_data *data, t_draw *draw);
+void	draw_dda_side(t_draw *draw);
 void	draw_assset_bounds(t_draw *draw);
 void	draw_assset_pixel(t_cam *cam, t_draw *draw);
 void	draw_asset(t_mlx *mlx, t_img *img, t_draw *draw);
 void	draw_pixel(t_img *img, int x, int y, unsigned int color);
+void	draw_square(t_img *img, int x, int y, int color);
 
 bool	is_empty(char *str);
 bool	is_border(t_data *data, int i, int j);
 bool	is_outside(t_data *data, int x, int y);
 bool	is_coord(t_data *data, char **str_map, int *i, int *j);
 bool	is_valid(t_data *data, t_point *point);
+bool	is_door(t_cam *cam, int x, int y);
 
 void	free_data(t_data *data);
 void	move_point(t_cam *cam, t_point *tmp, t_vector *move_dir, int keycode);
+void	door(t_data *data, t_cam *cam);
+void	door_check(t_data *data, t_draw *draw, t_cam *cam);
 int		args_check(int argc, const char **argv);
 int		error(char *str);
 int		dfs(t_data *data, char **str_map, int i, int j);

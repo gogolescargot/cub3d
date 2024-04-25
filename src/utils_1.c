@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 02:13:39 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/25 20:06:41 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 00:22:06 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,4 +74,42 @@ int	type_init(char ***type)
 	(*type)[4] = "F";
 	(*type)[5] = "C";
 	return (0);
+}
+
+void	door(t_data *data, t_cam *cam)
+{
+	if (cam->door.x != -1 && cam->door.y != -1)
+	{
+		if (data->map[cam->door.y][cam->door.x] == 'C')
+			data->map[cam->door.y][cam->door.x] = 'O';
+		else
+			data->map[cam->door.y][cam->door.x] = 'C';
+	}
+}
+
+void	door_check(t_data *data, t_draw *draw, t_cam *cam)
+{
+	if (!is_outside(data, draw->map.x, draw->map.y)
+		&& ft_strchr("OC", data->map[draw->map.y][draw->map.x]))
+	{
+		if (draw->side == WEST || draw->side == EAST)
+			draw->side = DOOR_X;
+		else
+			draw->side = DOOR_Y;
+	}
+	if (draw->screen.x != WIDTH / 2)
+		return ;
+	if (!is_outside(data, draw->map.x, draw->map.y)
+		&& ft_strchr("OC", data->map[draw->map.y][draw->map.x])
+		&& is_door(cam, draw->map.x, draw->map.y))
+	{
+		cam->door_crossed = true;
+		cam->door.x = draw->map.x;
+		cam->door.y = draw->map.y;
+	}
+	else if (!cam->door_crossed)
+	{
+		cam->door.x = -1;
+		cam->door.y = -1;
+	}
 }
