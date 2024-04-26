@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 13:31:33 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 13:41:36 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ void	rotate(t_cam *cam, int keycode, double rotate_speed)
 
 int	loop(t_data *data)
 {
-	double	elapsed_time;
 	clock_t	start_time;
 	clock_t	end_time;
 
@@ -83,8 +82,7 @@ int	loop(t_data *data)
 	mouse(data->mlx, data->cam);
 	draw(data);
 	end_time = clock();
-	elapsed_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
-	usleep(((1.0 / FPS) - elapsed_time) * 1000000);
+	usleep(((1000.0 / FPS) - ((end_time - start_time) / 1000)) * 1000);
 	return (0);
 }
 
