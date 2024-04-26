@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:51:48 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 13:41:36 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 18:25:05 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,15 @@ int	loop(t_data *data)
 {
 	clock_t	start_time;
 	clock_t	end_time;
+	int		wait_time;
 
 	start_time = clock();
 	mouse(data->mlx, data->cam);
 	draw(data);
 	end_time = clock();
-	usleep(((1000.0 / FPS) - ((end_time - start_time) / 1000)) * 1000);
+	wait_time = ((1000.0 / FPS) - ((end_time - start_time) / 1000)) * 1000;
+	if (wait_time > 0)
+		usleep(wait_time);
 	return (0);
 }
 
