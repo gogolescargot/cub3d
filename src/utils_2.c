@@ -6,18 +6,11 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 02:01:36 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 00:09:00 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 13:05:07 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-
-double	absolute(double nbr)
-{
-	if (nbr < 0)
-		return (nbr *= -1);
-	return (nbr);
-}
 
 int	error(char *str)
 {

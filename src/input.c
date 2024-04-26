@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 00:14:03 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 00:16:15 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 13:12:49 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ int	mouse(t_mlx *mlx, t_cam *cam)
 
 	mlx_mouse_get_pos(mlx->ptr, mlx->win, &mouse.x, &mouse.y);
 	if (mouse.x > WIDTH / 2 + WIDTH / 4)
-		rotate(cam, R_ARR, ROTATE_SPEED / 5);
+		rotate(cam, R_ARR, ROTATE_SPEED);
 	else if (mouse.x < WIDTH / 2 - WIDTH / 4)
-		rotate(cam, L_ARR, ROTATE_SPEED / 5);
+		rotate(cam, L_ARR, ROTATE_SPEED);
 	return (0);
 }

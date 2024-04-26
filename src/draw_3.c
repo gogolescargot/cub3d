@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 00:24:35 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 13:31:20 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,16 +78,18 @@ void	draw_gun(t_mlx *mlx, t_img *img, t_cam *cam)
 void	draw_gun_select(t_mlx *mlx, t_cam *cam, t_img **gun)
 {
 	static int	i;
+	int			tmp;
 
-	if (i == 0)
+	tmp = i / 5;
+	if (tmp == 0)
 		*gun = &mlx->gun_1;
-	else if (i == 1)
+	else if (tmp == 1)
 		*gun = &mlx->gun_2;
-	else if (i == 2)
+	else if (tmp == 2)
 		*gun = &mlx->gun_3;
-	else if (i == 3)
+	else if (tmp == 3)
 		*gun = &mlx->gun_4;
-	else if (i == 4)
+	else if (tmp == 4)
 	{
 		*gun = &mlx->gun_0;
 		cam->shot = false;

@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 01:55:43 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 00:20:23 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 13:05:18 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ void	draw_init(t_cam *cam, t_draw *draw)
 	cam->ray.y = cam->dir.y + cam->plane.y * cam->camera_x;
 	draw->map.x = cam->pos.x;
 	draw->map.y = cam->pos.y;
-	draw->delta_dist.x = absolute(1 / cam->ray.x);
-	draw->delta_dist.y = absolute(1 / cam->ray.y);
+	draw->delta_dist.x = fabs(1 / cam->ray.x);
+	draw->delta_dist.y = fabs(1 / cam->ray.y);
 }
 
 void	draw_dir(t_cam *cam, t_draw *draw)

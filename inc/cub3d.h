@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 00:26:15 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/26 13:30:42 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <fcntl.h>
 # include <stdbool.h>
 # include <math.h>
+# include <time.h>
 
 # define ESC 65307
 # define W 119
@@ -52,6 +53,7 @@
 
 # define ROTATE_SPEED 0.031416
 # define MOVE_SPEED 0.05
+# define FPS 60
 
 typedef struct s_vector
 {
@@ -227,6 +229,5 @@ void	door_check(t_data *data, t_draw *draw, t_cam *cam);
 int		args_check(int argc, const char **argv);
 int		error(char *str);
 int		dfs(t_data *data, char **str_map, int i, int j);
-double	absolute(double nbr);
 
 #endif
