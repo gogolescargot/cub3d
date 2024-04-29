@@ -12,7 +12,7 @@
 
 #include "cub3d.h"
 
-void	draw_assset_bounds(t_draw *draw)
+void	draw_asset_bounds(t_draw *draw)
 {
 	if (draw->side == EAST || draw->side == WEST || draw->side == DOOR_X)
 		draw->perp_wall_dist = draw->dist.x - draw->delta_dist.x;
@@ -27,7 +27,7 @@ void	draw_assset_bounds(t_draw *draw)
 		draw->draw_end = HEIGHT - 1;
 }
 
-void	draw_assset_pixel(t_cam *cam, t_draw *draw)
+void	draw_asset_pixel(t_cam *cam, t_draw *draw)
 {
 	if (draw->side == WEST || draw->side == EAST || draw->side == DOOR_X)
 		draw->wall_x = cam->pos.y + draw->perp_wall_dist * cam->ray.y;

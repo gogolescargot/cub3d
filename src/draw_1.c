@@ -29,8 +29,8 @@ int	draw(t_data *data)
 		draw_init(cam, &draw);
 		draw_dir(cam, &draw);
 		draw_dda(data, &draw);
-		draw_assset_bounds(&draw);
-		draw_assset_pixel(cam, &draw);
+		draw_asset_bounds(&draw);
+		draw_asset_pixel(cam, &draw);
 		draw_asset(mlx, img, &draw);
 		draw.screen.x++;
 	}
