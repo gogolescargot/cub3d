@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   asset_2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 03:55:57 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 00:02:40 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/29 18:00:27 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,9 @@
 
 int	asset_init(t_data *data, t_asset *asset, t_mlx *mlx)
 {
-	int	t;
-
-	if (asset_check(asset))
+	if (asset_check_open(asset))
 		destroy(data, 1);
-	mlx->no.ptr = mlx_xpm_file_to_image(mlx->ptr, asset->no, &t, &t);
-	mlx->so.ptr = mlx_xpm_file_to_image(mlx->ptr, asset->so, &t, &t);
-	mlx->we.ptr = mlx_xpm_file_to_image(mlx->ptr, asset->we, &t, &t);
-	mlx->ea.ptr = mlx_xpm_file_to_image(mlx->ptr, asset->ea, &t, &t);
-	mlx->door.ptr = mlx_xpm_file_to_image(mlx->ptr, "asset/door.xpm", &t, &t);
-	mlx->gun_0.ptr = mlx_xpm_file_to_image(mlx->ptr, "asset/gun_0.xpm", &t, &t);
-	mlx->gun_1.ptr = mlx_xpm_file_to_image(mlx->ptr, "asset/gun_1.xpm", &t, &t);
-	mlx->gun_2.ptr = mlx_xpm_file_to_image(mlx->ptr, "asset/gun_2.xpm", &t, &t);
-	mlx->gun_3.ptr = mlx_xpm_file_to_image(mlx->ptr, "asset/gun_3.xpm", &t, &t);
-	mlx->gun_4.ptr = mlx_xpm_file_to_image(mlx->ptr, "asset/gun_4.xpm", &t, &t);
+	asset_init_pointer(mlx, asset);
 	if (!mlx->no.ptr || !mlx->so.ptr || !mlx->we.ptr
 		|| !mlx->ea.ptr || !mlx->door.ptr
 		|| !mlx->gun_0.ptr || !mlx->gun_1.ptr || !mlx->gun_2.ptr
@@ -36,8 +25,33 @@ int	asset_init(t_data *data, t_asset *asset, t_mlx *mlx)
 		error("Asset error");
 		destroy(data, 1);
 	}
+	asset_check_size(data, mlx);
 	asset_init_address(mlx);
 	return (0);
+}
+
+void	asset_init_pointer(t_mlx *mlx, t_asset *asset)
+{
+	mlx->no.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, asset->no, &mlx->no.width, &mlx->no.height);
+	mlx->so.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, asset->so, &mlx->so.width, &mlx->so.height);
+	mlx->we.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, asset->we, &mlx->we.width, &mlx->we.height);
+	mlx->ea.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, asset->ea, &mlx->ea.width, &mlx->ea.height);
+	mlx->door.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, "asset/door.xpm", &mlx->door.width, &mlx->door.height);
+	mlx->gun_0.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, "asset/gun_0.xpm", &mlx->gun_0.width, &mlx->gun_0.height);
+	mlx->gun_1.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, "asset/gun_1.xpm", &mlx->gun_1.width, &mlx->gun_1.height);
+	mlx->gun_2.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, "asset/gun_2.xpm", &mlx->gun_2.width, &mlx->gun_2.height);
+	mlx->gun_3.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, "asset/gun_3.xpm", &mlx->gun_3.width, &mlx->gun_3.height);
+	mlx->gun_4.ptr = mlx_xpm_file_to_image
+		(mlx->ptr, "asset/gun_4.xpm", &mlx->gun_4.width, &mlx->gun_4.height);
 }
 
 void	asset_init_address(t_mlx *mlx)
@@ -62,31 +76,6 @@ void	asset_init_address(t_mlx *mlx)
 			&mlx->gun_3.bpp, &mlx->gun_3.size_line, &mlx->gun_3.endian);
 	mlx->gun_4.addr = mlx_get_data_addr(mlx->gun_4.ptr,
 			&mlx->gun_4.bpp, &mlx->gun_4.size_line, &mlx->gun_4.endian);
-}
-
-int	asset_check(t_asset *asset)
-{
-	if (asset_open(asset->no))
-		return (1);
-	if (asset_open(asset->so))
-		return (1);
-	if (asset_open(asset->we))
-		return (1);
-	if (asset_open(asset->ea))
-		return (1);
-	if (asset_open("asset/door.xpm"))
-		return (1);
-	if (asset_open("asset/gun_0.xpm"))
-		return (1);
-	if (asset_open("asset/gun_1.xpm"))
-		return (1);
-	if (asset_open("asset/gun_2.xpm"))
-		return (1);
-	if (asset_open("asset/gun_3.xpm"))
-		return (1);
-	if (asset_open("asset/gun_4.xpm"))
-		return (1);
-	return (0);
 }
 
 int	asset_open(char *filepath)

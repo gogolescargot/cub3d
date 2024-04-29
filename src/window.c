@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 02:45:59 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/25 19:38:10 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/29 18:03:04 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ int	window_init(t_data *data, t_mlx *mlx)
 		free_data(data);
 		return (1);
 	}
-	mlx->win = mlx_new_window(mlx->ptr, WIDTH, HEIGHT, "ggalon - cub3d");
+	mlx->win = mlx_new_window
+		(mlx->ptr, WIDTH, HEIGHT, "ggalon - alermolo | cub3d");
 	if (!mlx->win)
 	{
 		error("minilibX window failed");

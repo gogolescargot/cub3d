@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+         #
+#    By: ggalon <ggalon@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/28 00:56:29 by ggalon            #+#    #+#              #
-#    Updated: 2024/04/26 00:21:43 by ggalon           ###   ########.fr        #
+#    Updated: 2024/04/29 18:01:24 by ggalon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,9 +32,9 @@ LIBFT	=	$(LIBFT_DIR)libft.a
 
 MLX		=	$(MLX_DIR)libmlx_Linux.a
 
-FILE_C	=	cub3d file map_1 map_2 map_3 camera window input asset_1 asset_2 draw_1 draw_2 draw_3 draw_4 bool_1 bool_2 utils_1 utils_2
+FILE_C	=	cub3d file map_1 map_2 map_3 camera window input asset_1 asset_2 asset_3 draw_1 draw_2 draw_3 draw_4 bool_1 bool_2 utils_1 utils_2
 
-FILE_CB	=	cub3d file map_1 map_2 map_3 camera window input asset_1 asset_2 draw_1 draw_2 draw_3 draw_4 bool_1 bool_2 utils_1 utils_2
+FILE_CB	=	cub3d file map_1 map_2 map_3 camera window input asset_1 asset_2 asset_3 draw_1 draw_2 draw_3 draw_4 bool_1 bool_2 utils_1 utils_2
 
 FILE_H	=	cub3d
 

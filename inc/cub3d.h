@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:45:55 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 13:30:42 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/29 18:01:00 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@
 
 # define WIDTH_GUN 128
 # define HEIGHT_GUN 128
-
-# define PI 3.14159265359
 
 # define ROTATE_SPEED 0.031416
 # define MOVE_SPEED 0.05
@@ -93,6 +91,8 @@ typedef struct s_img
 {
 	void	*ptr;
 	char	*addr;
+	int		width;
+	int		height;
 	int		bpp;
 	int		size_line;
 	int		endian;
@@ -188,8 +188,11 @@ int		window_init(t_data *data, t_mlx *mlx);
 int		image_init(t_data *data, t_mlx *mlx);
 
 int		asset_init(t_data *data, t_asset *asset, t_mlx *mlx);
+void	asset_init_pointer(t_mlx *mlx, t_asset *asset);
 void	asset_init_address(t_mlx *mlx);
-int		asset_check(t_asset *asset);
+int		asset_check_open(t_asset *asset);
+void	asset_check_size(t_data *data, t_mlx *mlx);
+void	asset_check_size_utils(t_mlx *mlx, bool *trigger);
 int		asset_open(char *filepath);
 int		asset_insert(t_asset *asset, char *info, int i);
 int		asset_insert_string(t_asset *asset, char *info, int i);

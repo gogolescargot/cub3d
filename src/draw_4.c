@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw_4.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 00:19:45 by ggalon            #+#    #+#             */
-/*   Updated: 2024/04/26 00:20:28 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/04/29 19:29:12 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,13 @@ void	draw_color(t_asset *asset, t_img *img)
 
 	x = 0;
 	y = 0;
-	while (y < HEIGHT - 1)
+	while (y < HEIGHT)
 	{
 		if (y < HEIGHT / 2)
 			color = asset->ce;
 		else
 			color = asset->fl;
-		while (x < WIDTH - 1)
+		while (x < WIDTH)
 		{
 			draw_pixel(img, x, y, color);
 			x++;
