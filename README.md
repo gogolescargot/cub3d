@@ -17,6 +17,9 @@ make a dynamic view inside a maze, in which you’ll have to find your way.
 # Compile
 make
 
+# Compile with bonus features
+make bonus
+
 # Delete Objects files
 make clean
 
