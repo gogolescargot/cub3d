@@ -14,7 +14,7 @@ make a dynamic view inside a maze, in which you’ll have to find your way.
 ### How to run :
 
 ```bash
-# Start
+# Compile
 make
 
 # Delete Objects files
@@ -23,6 +23,9 @@ make clean
 # Clean and Delete Executable file
 make fclean
 
-# Full Clean and Restart
+# Full Clean and Recompile
 make re
+
+# Start (1 parameter, .cub file)
+./cub3d map.cub
 ```
